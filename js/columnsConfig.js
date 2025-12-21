@@ -20,7 +20,7 @@ const columnasValidasFase1 = [
     "Facultad de Medicina y Ciencias de la Salud",
     "Centro de Investigación",
     "Otras Unidades No Académicas",
-    "Otras Unidades No Académicas.1",
+    "Otras Unidades No Académicas",
     "Programas de Postgrado",
     "¿La iniciativa es organizada en conjunto con otras unidades académicas o administrativas?",
     "Unidades Co-organizadoras",
