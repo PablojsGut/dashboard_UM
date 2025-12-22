@@ -47,7 +47,7 @@ function normalizeText(text) {
 ================================ */
 function loadExcel(file) {
     resetExcelState();
-
+    clearAlerts();
     const reader = new FileReader();
 
     reader.onload = e => {
