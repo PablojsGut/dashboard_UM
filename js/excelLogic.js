@@ -1,6 +1,19 @@
 // excelLogic.js
+/* ==============================
+   NORMALIZAR TEXTO
+================================ */
+function normalizeText(text) {
+    return String(text ?? '')
+        .replace(/\r?\n|\r/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
 
+/* ==============================
+   VARIABLES GLOBALES
+================================ */
 let excelData = [];
+let excelHeaders = [];
 let faseSeleccionada = 'fase1';
 
 /* ==============================
@@ -11,7 +24,7 @@ function setFase(fase) {
 }
 
 /* ==============================
-   INPUT ACTIVO SEGÚN FASE
+   INPUT ACTIVO
 ================================ */
 function getActiveExcelInput() {
     return document.getElementById(
@@ -24,30 +37,22 @@ function getActiveExcelInput() {
 }
 
 /* ==============================
-   RESET ESTADO EXCEL
+   RESET ESTADO
 ================================ */
 function resetExcelState() {
     excelData = [];
+    excelHeaders = [];
     const kpis = document.getElementById('kpisContainer');
     if (kpis) kpis.innerHTML = '';
 }
 
 /* ==============================
-   NORMALIZACIÓN DE TEXTO
-================================ */
-function normalizeText(text) {
-    return String(text)
-        .replace(/\r?\n|\r/g, ' ')   // elimina saltos de línea
-        .replace(/\s+/g, ' ')        // espacios múltiples
-        .trim();
-}
-
-/* ==============================
-   CARGA DE EXCEL
+   CARGA EXCEL
 ================================ */
 function loadExcel(file) {
     resetExcelState();
     clearAlerts();
+
     const reader = new FileReader();
 
     reader.onload = e => {
@@ -58,7 +63,7 @@ function loadExcel(file) {
 
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        // Encabezados en fila 3
+        // encabezados en fila 3
         const rows = XLSX.utils.sheet_to_json(sheet, {
             header: 1,
             range: 2,
@@ -70,39 +75,19 @@ function loadExcel(file) {
             return;
         }
 
-        /* ==============================
-           ENCABEZADOS
-        ================================ */
-        const rawHeaders = rows[0];
-        const headers = rawHeaders.map(normalizeText);
+        /* ===== ENCABEZADOS ===== */
+        excelHeaders = rows[0].map(normalizeText);
 
-        /* ==============================
-           VALIDACIÓN FASE 1
-        ================================ */
+        /* ===== VALIDACIÓN FASE 1 ===== */
         if (faseSeleccionada === 'fase1') {
             const expected = columnasValidasFase1.map(normalizeText);
-
-            const faltantes = expected.filter(
-                col => !headers.includes(col)
-            );
-
-            if (faltantes.length) {
-                showAlert(
-                    `❌ El Excel no cumple el formato requerido.<br>
-                     <strong>Columnas faltantes:</strong>
-                     <ul>${faltantes.map(c => `<li>${c}</li>`).join('')}</ul>`,
-                    'warning'
-                );
-                return;
-            }
+            if (!validateColumns(excelHeaders, expected)) return;
         }
 
-        /* ==============================
-           DATOS
-        ================================ */
-        excelData = rows
-            .slice(1)
-            .filter(row => row.some(cell => cell !== ''));
+        /* ===== DATOS ===== */
+        excelData = rows.slice(1).filter(row =>
+            row.some(cell => String(cell).trim() !== '')
+        );
 
         if (!excelData.length) {
             showAlert('El Excel no contiene registros válidos.', 'warning');
