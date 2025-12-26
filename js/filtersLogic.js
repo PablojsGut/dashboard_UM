@@ -1,3 +1,4 @@
+//filtersLogic.js
 function applyFilters() {
 
     if (!window.dfUnido || dfUnido.length === 0) {
@@ -60,7 +61,10 @@ function applyFilters() {
     // ACTUALIZAR UI
     // ======================
     updateKPIsAmbas(dfFiltrado);
+    renderAvanceFaseChart(dfFiltrado);
     renderCharts(dfFiltrado);
+    renderChartsPorMes(dfFiltrado);
+
 }
 
 

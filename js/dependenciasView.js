@@ -1,6 +1,4 @@
-/* ==============================
-   NORMALIZACIÓN DE TEXTO
-================================ */
+//dependenciasView.js
 function normalizeText(str) {
     if (!str) return '';
 

@@ -1,6 +1,4 @@
-// ==============================
-// VARIABLES GLOBALES
-// ==============================
+//excelLogic.js
 window.excelHeadersFase1 = [];
 window.excelDataFase1 = [];
 
@@ -78,9 +76,6 @@ function construirDataframes() {
         excelHeadersFase2,
         excelDataFase2
     );
-
-    renderDependencias();
-    renderCharts();
 
     // ✅ ESTA ES LA LÍNEA QUE FALTABA
     if (typeof initFiltrosDependencias === 'function') {

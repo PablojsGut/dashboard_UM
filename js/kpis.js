@@ -30,7 +30,13 @@ function updateKPIsAmbas(data = dfUnido) {
     let sumaNota1 = 0, cntNota1 = 0;
     let sumaNota2 = 0, cntNota2 = 0;
 
+    // ✅ NUEVOS CONTADORES
+    let completadosF1 = 0;
+    let completadosF2 = 0;
+    let avanzanF2 = 0;
+
     data.forEach(r => {
+
         const av1 = toNumber(r['% Avance (Iniciativas)']);
         const av2 = toNumber(r['% Avance (Síntesis)']);
         const n1 = toNumber(r['Nota final (Iniciativas)']);
@@ -40,8 +46,44 @@ function updateKPIsAmbas(data = dfUnido) {
         if (Number.isFinite(av2)) { sumaAv2 += av2; cntAv2++; }
         if (Number.isFinite(n1)) { sumaNota1 += n1; cntNota1++; }
         if (Number.isFinite(n2)) { sumaNota2 += n2; cntNota2++; }
+
+        // ==========================
+        // COMPLETADOS FASE 1
+        // ==========================
+        if (av1 === 100) {
+            completadosF1++;
+        }
+
+        // ==========================
+        // COMPLETADOS FASE 2
+        // ==========================
+        if (av2 === 100) {
+            completadosF2++;
+        }
+
+        // ==========================
+        // AVANZA A FASE 2
+        // (tiene al menos un dato en columnas Síntesis)
+        // ==========================
+        let tieneSintesis = false;
+
+        Object.keys(r).forEach(k => {
+            if (k.includes('(Síntesis)')) {
+                const val = r[k];
+                if (val !== null && val !== undefined && String(val).trim() !== '') {
+                    tieneSintesis = true;
+                }
+            }
+        });
+
+        if (tieneSintesis) {
+            avanzanF2++;
+        }
     });
 
+    // ==========================
+    // RENDER KPIs
+    // ==========================
     kpisContainer.innerHTML = `
         <div class="kpi-card">
             <div class="kpi-label">Total Registros</div>
@@ -66,6 +108,27 @@ function updateKPIsAmbas(data = dfUnido) {
         <div class="kpi-card">
             <div class="kpi-label">Prom. Nota Fase 2</div>
             <div class="kpi-value">${(cntNota2 ? sumaNota2 / cntNota2 : 0).toFixed(2)} pts</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">% Completados Fase 1</div>
+            <div class="kpi-value">
+                ${total ? ((completadosF1 / total) * 100).toFixed(1) : 0}%
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">% Completados Fase 2</div>
+            <div class="kpi-value">
+                ${total ? ((completadosF2 / total) * 100).toFixed(1) : 0}%
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">% Avanzan a Fase 2</div>
+            <div class="kpi-value">
+                ${total ? ((avanzanF2 / total) * 100).toFixed(1) : 0}%
+            </div>
         </div>
     `;
 }

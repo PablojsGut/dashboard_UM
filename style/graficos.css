@@ -1,0 +1,12 @@
+.chart-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    height: 320px;          /* 👈 controla tamaño */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
