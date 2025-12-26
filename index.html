@@ -26,91 +26,44 @@
     <!-- EXCEL -->
     <div class="container mb-3">
         <div class="card p-3 shadow-sm">
-            <!-- TABS -->
-            <ul class="nav nav-tabs" id="faseTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button
-                        class="nav-link active"
-                        id="fase1-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#fase1"
-                        type="button"
-                        role="tab"
-                        aria-selected="true"
-                        onclick="setFase('fase1')"
-                    >
-                        Iniciativas (Fase 1)
-                    </button>
-                </li>
 
-                <li class="nav-item" role="presentation">
-                    <button
-                        class="nav-link"
-                        id="fase2-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#fase2"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                        onclick="setFase('fase2')"
-                    >
-                        Síntesis (Fase 2)
-                    </button>
-                </li>
+            <h5 class="fw-semibold mb-3">
+                📊 Carga de Excel – Ambas Fases
+            </h5>
 
-                <li class="nav-item" role="presentation">
-                    <button
-                        class="nav-link"
-                        id="ambas-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#ambas"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                        onclick="setFase('ambas')"
-                    >
-                        Ambas Fases
-                    </button>
-                </li>
-            </ul>
-
-            <!-- CONTENIDO DE TABS -->
-            <div class="tab-content pt-3">
-
-                <!-- FASE 1 -->
-                <div class="tab-pane fade show active" id="fase1" role="tabpanel">
-                    <input
-                        type="file"
-                        id="excelInputFase1"
-                        class="form-control w-auto"
-                        accept=".xlsx,.xls"
-                    >
-                </div>
-
-                <!-- FASE 2 -->
-                <div class="tab-pane fade" id="fase2" role="tabpanel">
-                    <input
-                        type="file"
-                        id="excelInputFase2"
-                        class="form-control w-auto"
-                        accept=".xlsx,.xls"
-                    >
-                </div>
-
-                <!-- AMBAS -->
-                <div class="tab-pane fade" id="ambas" role="tabpanel">
-                    <input
-                        type="file"
-                        id="excelInputAmbas"
-                        class="form-control w-auto"
-                        accept=".xlsx,.xls"
-                    >
-                </div>
-
+            <!-- EXCEL FASE 1 -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    📄 Excel Iniciativas (Fase 1)
+                </label>
+                <input
+                    type="file"
+                    id="excelInputAmbasFase1"
+                    class="form-control w-auto"
+                    accept=".xlsx,.xls"
+                >
             </div>
 
+            <!-- EXCEL FASE 2 -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    📄 Excel Síntesis (Fase 2)
+                </label>
+                <input
+                    type="file"
+                    id="excelInputAmbasFase2"
+                    class="form-control w-auto"
+                    accept=".xlsx,.xls"
+                >
+            </div>
+
+            <!-- BOTÓN -->
+            <button class="btn btn-success mt-3" onclick="exportExcelUnido()">
+                ⬇️ Descargar Excel Unificado
+            </button>
+
             <small class="text-muted mt-3 d-block">
-                Selecciona el archivo Excel correspondiente según la fase.
+                Debes cargar ambos archivos para generar el Excel unificado.
             </small>
 
         </div>
@@ -174,17 +127,33 @@
         <div class="kpis-grid" id="kpisContainer"></div>
     </div>
 
+    <!-- GRÁFICOS -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="text-center">Estado Iniciativas</h5>
+                <canvas id="chartEstadoIniciativas"></canvas>
+            </div>
+
+            <div class="col-md-6">
+                <h5 class="text-center">Estado Síntesis</h5>
+                <canvas id="chartEstadoSintesis"></canvas>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="js/columnsConfig.js"></script>
+    <script src="js/excelValidator.js"></script>
     <script src="js/alert.js"></script>
-    <script src="js/validation.js"></script>
     <script src="js/excelLogic.js"></script>
-    <script src="js/kpi.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/main.js"></script>
-
+    <script src="js/excelExport.js"></script>
+    <script src="js/kpis.js"></script>
+    <script src="js/filtersLogic.js"></script>
+    <script src="js/dependenciasView.js"></script>
+    <script src="js/chartsLogic.js"></script>
 </body>
 </html>

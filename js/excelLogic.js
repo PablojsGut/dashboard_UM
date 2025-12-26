@@ -1,101 +1,188 @@
-// excelLogic.js
-/* ==============================
-   NORMALIZAR TEXTO
-================================ */
-function normalizeText(text) {
-    return String(text ?? '')
-        .replace(/\r?\n|\r/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
+// ==============================
+// VARIABLES GLOBALES
+// ==============================
+window.excelHeadersFase1 = [];
+window.excelDataFase1 = [];
 
-/* ==============================
-   VARIABLES GLOBALES
-================================ */
-let excelData = [];
-let excelHeaders = [];
-let faseSeleccionada = 'fase1';
+window.excelHeadersFase2 = [];
+window.excelDataFase2 = [];
 
-/* ==============================
-   CONTROL DE FASE
-================================ */
-function setFase(fase) {
-    faseSeleccionada = fase;
-}
+window.dfIniciativas = null;
+window.dfSintesis = null;
+window.dfUnido = null;
 
-/* ==============================
-   INPUT ACTIVO
-================================ */
-function getActiveExcelInput() {
-    return document.getElementById(
-        faseSeleccionada === 'fase1'
-            ? 'excelInputFase1'
-            : faseSeleccionada === 'fase2'
-            ? 'excelInputFase2'
-            : 'excelInputAmbas'
-    );
-}
+let fase1Cargada = false;
+let fase2Cargada = false;
 
-/* ==============================
-   RESET ESTADO
+/* ===============================
+   LEER EXCEL
 ================================ */
-function resetExcelState() {
-    excelData = [];
-    excelHeaders = [];
-    const kpis = document.getElementById('kpisContainer');
-    if (kpis) kpis.innerHTML = '';
-}
-
-/* ==============================
-   CARGA EXCEL
-================================ */
-function loadExcel(file) {
-    resetExcelState();
-    clearAlerts();
+function leerExcel(file, fase) {
 
     const reader = new FileReader();
 
     reader.onload = e => {
-        const workbook = XLSX.read(
-            new Uint8Array(e.target.result),
-            { type: 'array' }
-        );
 
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array' });
 
-        // encabezados en fila 3
-        const rows = XLSX.utils.sheet_to_json(sheet, {
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const sheetData = XLSX.utils.sheet_to_json(sheet, {
             header: 1,
-            range: 2,
-            defval: ''
+            defval: "",
+            blankrows: false
         });
 
-        if (!rows.length) {
-            showAlert('El archivo Excel está vacío.', 'warning');
-            return;
+        const headers = sheetData[2];   // fila 3
+        const rows = sheetData.slice(3); // datos
+
+        if (fase === 1) {
+            excelHeadersFase1 = headers;
+            excelDataFase1 = rows;
+            fase1Cargada = true;
         }
 
-        /* ===== ENCABEZADOS ===== */
-        excelHeaders = rows[0].map(normalizeText);
-
-        /* ===== VALIDACIÓN FASE 1 ===== */
-        if (faseSeleccionada === 'fase1') {
-            const expected = columnasValidasFase1.map(normalizeText);
-            if (!validateColumns(excelHeaders, expected)) return;
+        if (fase === 2) {
+            excelHeadersFase2 = headers;
+            excelDataFase2 = rows;
+            fase2Cargada = true;
         }
 
-        /* ===== DATOS ===== */
-        excelData = rows.slice(1).filter(row =>
-            row.some(cell => String(cell).trim() !== '')
-        );
-
-        if (!excelData.length) {
-            showAlert('El Excel no contiene registros válidos.', 'warning');
-            return;
+        // ✅ SOLO CUANDO AMBOS ESTÁN LISTOS
+        if (fase1Cargada && fase2Cargada) {
+            construirDataframes();
         }
-
-        updateKPIs();
     };
 
     reader.readAsArrayBuffer(file);
+}
+
+/* ===============================
+   CONSTRUIR DATAFRAMES
+================================ */
+function construirDataframes() {
+
+    dfIniciativas = buildDfIniciativas(
+        excelHeadersFase1,
+        excelDataFase1
+    );
+
+    dfSintesis = buildDfSintesis(
+        excelHeadersFase2,
+        excelDataFase2
+    );
+
+    dfUnido = unirExcelsPorID(
+        excelHeadersFase1,
+        excelDataFase1,
+        excelHeadersFase2,
+        excelDataFase2
+    );
+
+    renderDependencias();
+    renderCharts();
+
+    // ✅ ESTA ES LA LÍNEA QUE FALTABA
+    if (typeof initFiltrosDependencias === 'function') {
+        initFiltrosDependencias();
+    }
+
+    showAlert('✅ Excel unidos y listos para descargar', 'success');
+}
+
+/* ===============================
+   BUILD DF INICIATIVAS
+================================ */
+function buildDfIniciativas(headers, data) {
+
+    const colDependencia = "Unidad o Dependencia Responsable";
+
+    const idxDep = headers.indexOf(colDependencia);
+
+    if (idxDep === -1) {
+        showAlert('❌ No se encontró la columna Dependencia', 'danger');
+        return null;
+    }
+
+    const rows = data.map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = row[i] ?? '');
+        return obj;
+    });
+
+    const df = {
+        all: rows,
+        byDependencia: {}
+    };
+
+    rows.forEach(row => {
+        const dep = row[colDependencia] || 'Sin dependencia';
+
+        if (!df.byDependencia[dep]) {
+            df.byDependencia[dep] = {
+                all: [],
+                bySubdependencia: {}
+            };
+        }
+
+        df.byDependencia[dep].all.push(row);
+    });
+
+    return df;
+}
+
+/* ===============================
+   BUILD DF SÍNTESIS
+================================ */
+function buildDfSintesis(headers, data) {
+    return data.map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = row[i] ?? '');
+        return obj;
+    });
+}
+
+/* ===============================
+   UNIÓN POR ID
+================================ */
+function unirExcelsPorID(headersF1, dataF1, headersF2, dataF2) {
+
+    const idx1 = headersF1.findIndex(h => h.toLowerCase() === 'id');
+    const idx2 = headersF2.findIndex(h => h.toLowerCase() === 'id');
+
+    if (idx1 === -1 || idx2 === -1) {
+        showAlert('❌ Ambos Excel deben tener columna ID', 'danger');
+        return null;
+    }
+
+    const mapF2 = new Map();
+    dataF2.forEach(r => {
+        mapF2.set(String(r[idx2]).trim(), r);
+    });
+
+    const unidos = [];
+
+    dataF1.forEach(r1 => {
+
+        const id = String(r1[idx1]).trim();
+        const r2 = mapF2.get(id);
+
+        const obj = { ID: id };
+
+        headersF1.forEach((h, i) => {
+            if (h.toLowerCase() !== 'id') {
+                obj[`${h} (Iniciativas)`] = r1[i];
+            }
+        });
+
+        headersF2.forEach((h, i) => {
+            if (h.toLowerCase() !== 'id') {
+                obj[`${h} (Síntesis)`] = r2 ? r2[i] : '';
+            }
+        });
+
+        unidos.push(obj);
+    });
+
+    return unidos;
 }
