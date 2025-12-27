@@ -65,6 +65,11 @@ function applyFilters() {
     renderCharts(dfFiltrado);
     renderChartsPorMes(dfFiltrado);
 
+    const chartsSection = document.getElementById('chartsSection');
+    if (chartsSection) {
+        chartsSection.classList.remove('d-none');
+    }
+
 }
 
 

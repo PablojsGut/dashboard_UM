@@ -22,12 +22,18 @@ function validarYLeer(file, columnasEsperadas, fase) {
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        const columnasExcel = sheetData[2]?.map(c => c.trim()) || [];
+        const columnasExcel = (sheetData[2] || [])
+            .map(c => String(c ?? '').trim())
+            .filter(c => c.length > 0);
 
         const faltantes = columnasEsperadas.filter(c => !columnasExcel.includes(c));
 
         if (faltantes.length) {
-            showAlert(`❌ Error en Fase ${fase}. Columnas faltantes`, 'danger');
+            showAlert(
+                `❌ El archivo cargado no corresponde a la Fase ${fase}.
+                Verifica que estés usando el Excel correcto.`,
+                'danger'
+            );
             return;
         }
 

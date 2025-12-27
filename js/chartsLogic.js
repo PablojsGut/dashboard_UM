@@ -1,6 +1,12 @@
-//chartLogic.js
+// ==============================
+// VARIABLES GLOBALES
+// ==============================
 let chartIniciativas = null;
 let chartSintesis = null;
+let chartAvanceFase = null;
+
+let chartsIniciativasMes = [];
+let chartsSintesisMes = [];
 
 /* ==============================
    CONTAR ESTADOS
@@ -23,48 +29,42 @@ function contarEstados(data, columnName) {
 }
 
 /* ==============================
-   CREAR / ACTUALIZAR GRÁFICO
+   PIE CHART (SIN TÍTULO)
 ================================ */
-function renderPieChart(canvasId, conteo, titulo) {
+function renderPieChart(canvasId, conteo) {
 
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
 
     const total = conteo['En creación'] + conteo['Enviada'];
 
-    const data = {
-        labels: [
-            `En creación (${conteo['En creación']} - ${total ? ((conteo['En creación'] / total) * 100).toFixed(1) : 0}%)`,
-            `Enviada (${conteo['Enviada']} - ${total ? ((conteo['Enviada'] / total) * 100).toFixed(1) : 0}%)`
-        ],
-        datasets: [{
-            data: [
-                conteo['En creación'],
-                conteo['Enviada']
-            ],
-            backgroundColor: ['#ffc107', '#198754']
-        }]
-    };
-
     return new Chart(ctx, {
         type: 'pie',
-        data,
+        data: {
+            labels: [
+                `En creación (${conteo['En creación']} - ${total ? ((conteo['En creación'] / total) * 100).toFixed(1) : 0}%)`,
+                `Enviada (${conteo['Enviada']} - ${total ? ((conteo['Enviada'] / total) * 100).toFixed(1) : 0}%)`
+            ],
+            datasets: [{
+                data: [
+                    conteo['En creación'],
+                    conteo['Enviada']
+                ],
+                backgroundColor: ['#ffc107', '#198754']
+            }]
+        },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom' },
-                title: {
-                    display: true,
-                    text: titulo
-                }
+                legend: { position: 'bottom' }
             }
         }
     });
 }
 
-
 /* ==============================
-   RENDER GENERAL
+   RENDER GENERAL (TORTAS)
 ================================ */
 function renderCharts(data = null) {
 
@@ -76,19 +76,14 @@ function renderCharts(data = null) {
 
     chartIniciativas = renderPieChart(
         'chartEstadoIniciativas',
-        contarEstados(fuente, 'Estado (Iniciativas)'),
-        'Estado Iniciativas'
+        contarEstados(fuente, 'Estado (Iniciativas)')
     );
 
     chartSintesis = renderPieChart(
         'chartEstadoSintesis',
-        contarEstados(fuente, 'Estado (Síntesis)'),
-        'Estado Síntesis'
+        contarEstados(fuente, 'Estado (Síntesis)')
     );
 }
-
-
-let chartAvanceFase = null;
 
 /* ==============================
    AVANCE FASE 1 → FASE 2
@@ -100,7 +95,6 @@ function calcularAvanceFase(data) {
 
     data.forEach(row => {
 
-        // columnas de síntesis
         const columnasSintesis = Object.keys(row)
             .filter(k => k.endsWith('(Síntesis)'));
 
@@ -108,18 +102,14 @@ function calcularAvanceFase(data) {
             col => row[col] !== null && row[col] !== ''
         );
 
-        if (tieneSintesis) {
-            avanza++;
-        } else {
-            noAvanza++;
-        }
+        tieneSintesis ? avanza++ : noAvanza++;
     });
 
     return { avanza, noAvanza };
 }
 
 /* ==============================
-   RENDER BAR CHART
+   BAR CHART AVANCE FASE (SIN TÍTULO)
 ================================ */
 function renderAvanceFaseChart(data = null) {
 
@@ -138,7 +128,6 @@ function renderAvanceFaseChart(data = null) {
         data: {
             labels: ['Avanza', 'No avanza'],
             datasets: [{
-                label: 'Cantidad de registros',
                 data: [avanza, noAvanza],
                 backgroundColor: ['#0d6efd', '#dc3545']
             }]
@@ -146,20 +135,17 @@ function renderAvanceFaseChart(data = null) {
         options: {
             indexAxis: 'y',
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: { display: false },
-                title: {
-                    display: true,
-                    text: 'Avance de Fase 1 → Fase 2'
-                }
+                legend: { display: false }
             },
             scales: {
                 x: {
+                    beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Cantidad de registros'
-                    },
-                    beginAtZero: true
+                    }
                 },
                 y: {
                     title: {
@@ -172,9 +158,9 @@ function renderAvanceFaseChart(data = null) {
     });
 }
 
-let chartsIniciativasMes = [];
-let chartsSintesisMes = [];
-
+/* ==============================
+   FECHAS Y AGRUPACIONES
+================================ */
 function parseFecha(fecha) {
     if (!fecha) return null;
     const d = new Date(fecha);
@@ -190,7 +176,7 @@ function agruparPorAnoMes(data, columnaFecha) {
         if (!fecha) return;
 
         const year = fecha.getFullYear();
-        const month = fecha.getMonth(); // 0-11
+        const month = fecha.getMonth();
 
         if (!resultado[year]) {
             resultado[year] = Array(12).fill(0);
@@ -202,7 +188,10 @@ function agruparPorAnoMes(data, columnaFecha) {
     return resultado;
 }
 
-function crearBarChartPorAno(containerId, agrupado, tituloBase) {
+/* ==============================
+   BARRAS POR AÑO (SIN TÍTULO)
+================================ */
+function crearBarChartPorAno(containerId, agrupado) {
 
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -216,27 +205,28 @@ function crearBarChartPorAno(containerId, agrupado, tituloBase) {
 
     Object.entries(agrupado).forEach(([year, valores]) => {
 
+        const wrapper = document.createElement('div');
+        wrapper.style.height = '300px';
+        wrapper.style.marginBottom = '24px';
+
         const canvas = document.createElement('canvas');
-        container.appendChild(canvas);
+        wrapper.appendChild(canvas);
+        container.appendChild(wrapper);
 
         new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: meses,
                 datasets: [{
-                    label: `${tituloBase} ${year}`,
-                    data: valores
+                    data: valores,
+                    backgroundColor: '#0d6efd'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: `${tituloBase} ${year}`
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
@@ -249,42 +239,24 @@ function crearBarChartPorAno(containerId, agrupado, tituloBase) {
                 }
             }
         });
-
-        canvas.parentElement.style.height = '300px';
-        canvas.parentElement.style.marginBottom = '24px';
     });
 }
 
+/* ==============================
+   RENDER GRÁFICOS POR MES
+================================ */
 function renderChartsPorMes(data = null) {
 
     const fuente = data ?? window.dfUnido;
     if (!fuente || fuente.length === 0) return;
 
-    // =========================
-    // INICIATIVAS
-    // =========================
-    const iniciativasAgrupadas = agruparPorAnoMes(
-        fuente,
-        'Fecha envío (Iniciativas)'
-    );
-
     crearBarChartPorAno(
         'chartsIniciativasPorMes',
-        iniciativasAgrupadas,
-        'Iniciativas'
-    );
-
-    // =========================
-    // SÍNTESIS
-    // =========================
-    const sintesisAgrupadas = agruparPorAnoMes(
-        fuente,
-        'Fecha envío (Síntesis)'
+        agruparPorAnoMes(fuente, 'Fecha envío (Iniciativas)')
     );
 
     crearBarChartPorAno(
         'chartsSintesisPorMes',
-        sintesisAgrupadas,
-        'Síntesis'
+        agruparPorAnoMes(fuente, 'Fecha envío (Síntesis)')
     );
 }

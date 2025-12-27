@@ -3,68 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard VcM - Modular</title>
+    <title>Dashboard de Iniciativas - VcM</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    rel="stylesheet"
+    />
     <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
     <header class="header-um">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col text-center text-md-start">
-                    <h1 class="dashboard-title">
-                        📊 Dashboard Vinculación con el Medio
+
+                <!-- Logo -->
+                <div class="col-auto">
+                    <img src="favicon.ico" alt="Universidad Mayor" class="dashboard-icon">
+                </div>
+
+                <!-- Título y subtítulo -->
+                <div class="col">
+                    <h1 class="dashboard-title mb-1">
+                        Dashboard Vinculación con el Medio
                     </h1>
-                    <p class="dashboard-subtitle">
+                    <p class="dashboard-subtitle mb-1">
                         Gestión y seguimiento de iniciativas vía Excel
                     </p>
+
+                    <!-- Link a Unificador -->
+                    <a
+                        href="unificador.html"
+                        class="icon-link icon-link-hover text-decoration-none"
+                    >
+                        Ir al Unificador de Iniciativas - VcM
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
+
             </div>
         </div>
     </header>
 
     <!-- EXCEL -->
-    <div class="container mb-3">
-        <div class="card p-3 shadow-sm">
+    <div class="container mb-4">
+        <div class="excel-section">
 
-            <h5 class="fw-semibold mb-3">
-                📊 Carga de Excel – Ambas Fases
-            </h5>
+            <div class="excel-title mb-3">
+                📄 Carga de Archivos Excel
+            </div>
 
             <!-- EXCEL FASE 1 -->
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    📄 Excel Iniciativas (Fase 1)
+                <label class="form-label">
+                    Excel Iniciativas <span class="text-muted">(Fase 1)</span>
                 </label>
                 <input
                     type="file"
                     id="excelInputAmbasFase1"
-                    class="form-control w-auto"
+                    class="form-control form-control-sm excel-input"
                     accept=".xlsx,.xls"
                 >
             </div>
 
             <!-- EXCEL FASE 2 -->
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    📄 Excel Síntesis (Fase 2)
+                <label class="form-label">
+                    Excel Síntesis <span class="text-muted">(Fase 2)</span>
                 </label>
                 <input
                     type="file"
                     id="excelInputAmbasFase2"
-                    class="form-control w-auto"
+                    class="form-control form-control-sm excel-input"
                     accept=".xlsx,.xls"
                 >
             </div>
 
             <!-- BOTÓN -->
-            <button class="btn btn-success mt-3" onclick="exportExcelUnido()">
-                ⬇️ Descargar Excel Unificado
-            </button>
+            <div class="d-flex align-items-center gap-3 mt-4">
+                <button
+                    class="btn btn-success btn-sm d-inline-flex align-items-center gap-2"
+                    onclick="exportExcelUnido()"
+                >
+                    <i class="bi bi-download"></i>
+                    Descargar Excel Unificado
+                </button>
 
-            <small class="text-muted mt-3 d-block">
-                Debes cargar ambos archivos para generar el Excel unificado.
-            </small>
+                <span class="text-muted small">
+                    Debes cargar ambos archivos
+                </span>
+            </div>
 
         </div>
     </div>
@@ -128,47 +156,57 @@
     </div>
 
     <!-- GRÁFICOS -->
-    <div class="container mt-4">
+    <div class="container mt-4 d-none" id="chartsSection">
 
-        <div class="row g-4 justify-content-center">
+        <div class="row g-4">
 
             <!-- Avance Fase -->
-            <div class="col-12 col-lg-8">
-                <div class="chart-card">
+            <div class="col-12">
+                <div class="chart-card chart-card-lg">
+                    <h6 class="chart-title text-center">
+                        Avance de Fase 1 → Fase 2
+                    </h6>
                     <canvas id="chartAvanceFase"></canvas>
                 </div>
             </div>
 
-            <!-- Estado Iniciativas -->
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="chart-card">
+            <!-- Estados -->
+            <div class="col-12 col-md-6">
+                <div class="chart-card chart-card-sm">
+                    <h6 class="chart-title text-center">Estado Iniciativas</h6>
                     <canvas id="chartEstadoIniciativas"></canvas>
                 </div>
             </div>
 
-            <!-- Estado Síntesis -->
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="chart-card">
+            <div class="col-12 col-md-6">
+                <div class="chart-card chart-card-sm">
+                    <h6 class="chart-title text-center">Estado Síntesis</h6>
                     <canvas id="chartEstadoSintesis"></canvas>
                 </div>
             </div>
 
-                <!-- INICIATIVAS POR MES -->
-            <div class="container mt-4">
-                <h5 class="text-center">Iniciativas enviadas por mes</h5>
-                <div id="chartsIniciativasPorMes"></div>
+            <!-- Iniciativas por mes -->
+            <div class="col-12">
+                <div class="chart-card chart-card-md">
+                    <h6 class="chart-title text-center">
+                        Iniciativas enviadas por mes
+                    </h6>
+                    <div id="chartsIniciativasPorMes"></div>
+                </div>
             </div>
 
-            <!-- SÍNTESIS POR MES -->
-            <div class="container mt-4">
-                <h5 class="text-center">Síntesis enviadas por mes</h5>
-                <div id="chartsSintesisPorMes"></div>
+            <!-- Síntesis por mes -->
+            <div class="col-12">
+                <div class="chart-card chart-card-md">
+                    <h6 class="chart-title text-center">
+                        Síntesis enviadas por mes
+                    </h6>
+                    <div id="chartsSintesisPorMes"></div>
+                </div>
             </div>
 
         </div>
     </div>
-
-
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
