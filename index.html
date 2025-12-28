@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Iniciativas - VcM</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style/main.css">
+</head>
+<body>
+    <header class="header-um">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <!-- Logo -->
+                <div class="col-auto">
+                    <img src="favicon.ico" alt="Universidad Mayor" class="dashboard-icon">
+                </div>
+
+                <!-- Título y subtítulo -->
+                <div class="col">
+                    <h1 class="dashboard-title mb-1">
+                        Dashboard Vinculación con el Medio
+                    </h1>
+                    <p class="dashboard-subtitle mb-1">
+                        Gestión y seguimiento de iniciativas vía Excel
+                    </p>
+
+                    <!-- Link a Unificador -->
+                    <a
+                        href="unificador.html"
+                        class="icon-link icon-link-hover text-decoration-none"
+                    >
+                        Ir al Unificador de Iniciativas - VcM
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- EXCEL -->
+    <div class="container mb-4">
+        <div class="excel-section">
+
+            <div class="excel-title mb-3">
+                📄 Carga de Archivos Excel
+            </div>
+
+            <!-- EXCEL FASE 1 -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Excel Iniciativas <span class="text-muted">(Fase 1)</span>
+                </label>
+                <input
+                    type="file"
+                    id="excelInputAmbasFase1"
+                    class="form-control form-control-sm excel-input"
+                    accept=".xlsx,.xls"
+                >
+            </div>
+
+            <!-- EXCEL FASE 2 -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Excel Síntesis <span class="text-muted">(Fase 2)</span>
+                </label>
+                <input
+                    type="file"
+                    id="excelInputAmbasFase2"
+                    class="form-control form-control-sm excel-input"
+                    accept=".xlsx,.xls"
+                >
+            </div>
+
+            <!-- BOTÓN -->
+            <div class="d-flex align-items-center gap-3 mt-4">
+                <button
+                    class="btn btn-success btn-sm d-inline-flex align-items-center gap-2"
+                    onclick="exportExcelUnido()"
+                >
+                    <i class="bi bi-download"></i>
+                    Descargar Excel Unificado
+                </button>
+
+                <span class="text-muted small">
+                    Debes cargar ambos archivos
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ALERTA -->
+    <div class="container mt-3">
+        <div id="alertsContainer"></div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="container filters-section mb-4">
+        <div class="filters-title mb-3">
+            🔍 Filtros Globales
+        </div>
+
+        <div class="row g-3">
+            <!-- Sede -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="filterSede" class="form-label">Sede</label>
+                <select id="filterSede" class="form-select">
+                    <option value="">Todas las sedes</option>
+                    <option value="Santiago">Santiago</option>
+                    <option value="Temuco">Temuco</option>
+                </select>
+            </div>
+
+            <!-- Dependencia -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="filterDependencia" class="form-label">Dependencia</label>
+                <select id="filterDependencia" class="form-select">
+                    <option value="">Todas las dependencias</option>
+                </select>
+            </div>
+
+            <!-- Unidad Académica -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="filterUnidad" class="form-label">
+                    Unidad Académica
+                    <span class="text-muted small">(Pregrado / Postgrado)</span>
+                </label>
+                <select id="filterUnidad" class="form-select">
+                    <option value="">Todas las unidades</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-primary" onclick="applyFilters()" >
+                ✓ Aplicar Filtros
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                ↻ Limpiar Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- DATOS -->
+    <div class="container">
+        <div class="kpis-grid" id="kpisContainer"></div>
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="container mt-4 d-none" id="chartsSection">
+
+        <div class="row g-4">
+
+            <!-- Avance Fase -->
+            <div class="col-12">
+                <div class="chart-card chart-card-lg">
+                    <h6 class="chart-title text-center">
+                        Avance de Fase 1 → Fase 2
+                    </h6>
+                    <canvas id="chartAvanceFase"></canvas>
+                </div>
+            </div>
+
+            <!-- Estados -->
+            <div class="col-12 col-md-6">
+                <div class="chart-card chart-card-sm">
+                    <h6 class="chart-title text-center">Estado Iniciativas</h6>
+                    <canvas id="chartEstadoIniciativas"></canvas>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="chart-card chart-card-sm">
+                    <h6 class="chart-title text-center">Estado Síntesis</h6>
+                    <canvas id="chartEstadoSintesis"></canvas>
+                </div>
+            </div>
+
+            <!-- Iniciativas por mes -->
+            <div class="col-12">
+                <div class="chart-card chart-card-md">
+                    <h6 class="chart-title text-center">
+                        Iniciativas enviadas por mes
+                    </h6>
+                    <div id="chartsIniciativasPorMes"></div>
+                </div>
+            </div>
+
+            <!-- Síntesis por mes -->
+            <div class="col-12">
+                <div class="chart-card chart-card-md">
+                    <h6 class="chart-title text-center">
+                        Síntesis enviadas por mes
+                    </h6>
+                    <div id="chartsSintesisPorMes"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="js/columnsConfig.js"></script>
+    <script src="js/excelValidator.js"></script>
+    <script src="js/alert.js"></script>
+    <script src="js/excelLogic.js"></script>
+    <script src="js/excelExport.js"></script>
+    <script src="js/kpis.js"></script>
+    <script src="js/dependenciasView.js"></script>
+    <script src="js/filtersLogic.js"></script>
+    <script src="js/chartsLogic.js"></script>
+</body>
+</html>

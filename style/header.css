@@ -1,0 +1,53 @@
+:root {
+    /* Colores institucionales UM */
+    --um-yellow: #FBC11B;
+    --um-blue: #13343B;
+}
+
+/* HEADER DASHBOARD */
+.header-um {
+    background: linear-gradient(
+        135deg,
+        #fbc11b 0%,
+        #f9b800 100%
+    );
+    color: var(--um-blue);
+    padding: 2.5rem 0;
+    border-bottom: 4px solid var(--um-blue);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    margin-bottom: 0.5rem;
+}
+
+/* TÍTULO PRINCIPAL */
+.dashboard-title {
+    font-weight: 800;
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+/* SUBTÍTULO */
+.dashboard-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-bottom: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .dashboard-title {
+        font-size: 1.6rem;
+        text-align: center;
+    }
+
+    .dashboard-subtitle {
+        text-align: center;
+    }
+}
+
+.dashboard-icon {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
