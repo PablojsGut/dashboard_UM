@@ -1,0 +1,58 @@
+.filters-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid var(--um-yellow);
+}
+
+.filters-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--um-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ajuste fino Bootstrap */
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.form-select {
+    border-radius: 0.5rem;
+}
+
+.form-select:focus {
+    border-color: var(--um-yellow);
+    box-shadow: 0 0 0 0.2rem rgba(251, 193, 27, 0.25);
+}
+
+.excel-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid var(--um-yellow);
+}
+
+.excel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--um-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Inputs más institucionales */
+.excel-input {
+    max-width: 420px;
+}
+
+/* Focus coherente UM */
+.excel-input:focus {
+    border-color: var(--um-yellow);
+    box-shadow: 0 0 0 0.2rem rgba(251, 193, 27, 0.25);
+}
