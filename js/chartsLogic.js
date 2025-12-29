@@ -4,6 +4,7 @@
 let chartIniciativas = null;
 let chartSintesis = null;
 let chartAvanceFase = null;
+let chartSedeIniciativas = null;
 
 let chartsIniciativasMes = [];
 let chartsSintesisMes = [];
@@ -259,4 +260,401 @@ function renderChartsPorMes(data = null) {
         'chartsSintesisPorMes',
         agruparPorAnoMes(fuente, 'Fecha envío (Síntesis)')
     );
+}
+
+function contarSedes(data) {
+
+    const conteo = {
+        'Santiago': 0,
+        'Temuco': 0,
+        'Santiago;Temuco': 0
+    };
+
+    data.forEach(row => {
+        const sede = row['Sede (Iniciativas)'];
+
+        if (conteo.hasOwnProperty(sede)) {
+            conteo[sede]++;
+        }
+    });
+
+    return conteo;
+}
+
+function renderChartSede(data = null) {
+
+    const fuenteOriginal = data ?? window.dfUnido;
+    if (!fuenteOriginal || fuenteOriginal.length === 0) return;
+
+    const canvas = document.getElementById('chartSedeIniciativas');
+    const wrapper = document.getElementById('chartSedeWrapper');
+
+    if (!canvas || !wrapper) return;
+
+    // ✅ Solo iniciativas ENVIADAS
+    const fuente = fuenteOriginal.filter(row =>
+        row['Estado (Iniciativas)'] === 'Enviada'
+    );
+
+    if (fuente.length === 0) return;
+
+    if (
+        window.chartSedeIniciativas &&
+        typeof window.chartSedeIniciativas.destroy === 'function'
+    ) {
+        window.chartSedeIniciativas.destroy();
+    }
+
+    const conteo = contarSedes(fuente);
+
+    window.chartSedeIniciativas = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Iniciativas enviadas',
+                data: Object.values(conteo),
+                backgroundColor: [
+                    '#0d6efd',
+                    '#198754',
+                    '#6f42c1'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad de iniciativas'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderChartSedeSintesis(data = null) {
+
+    const fuenteOriginal = data ?? window.dfUnido;
+    if (!fuenteOriginal || fuenteOriginal.length === 0) return;
+
+    const canvas = document.getElementById('chartSedeSintesis');
+    const wrapper = document.getElementById('chartSedeSintesisWrapper');
+
+    if (!canvas || !wrapper) return;
+
+    // ✅ Solo SÍNTESIS ENVIADAS
+    const fuente = fuenteOriginal.filter(row =>
+        row['Estado (Síntesis)'] === 'Enviada'
+    );
+
+    if (fuente.length === 0) return;
+
+    if (
+        window.chartSedeSintesis &&
+        typeof window.chartSedeSintesis.destroy === 'function'
+    ) {
+        window.chartSedeSintesis.destroy();
+    }
+
+    const conteo = contarSedes(fuente);
+
+    window.chartSedeSintesis = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Síntesis enviadas',
+                data: Object.values(conteo),
+                backgroundColor: [
+                    '#fd7e14',
+                    '#20c997',
+                    '#6610f2'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad de síntesis'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function contarSedesTotales(data) {
+
+    const conteo = {
+        'Santiago': 0,
+        'Temuco': 0,
+        'Santiago;Temuco': 0,
+        'Sin información': 0
+    };
+
+    data.forEach(row => {
+        const sede = row['Sede (Iniciativas)'];
+
+        if (!sede || String(sede).trim() === '') {
+            conteo['Sin información']++;
+        } else if (conteo.hasOwnProperty(sede)) {
+            conteo[sede]++;
+        } else {
+            conteo['Sin información']++;
+        }
+    });
+
+    return conteo;
+}
+
+function renderChartSedeTotal(data = null) {
+
+    const fuente = data ?? window.dfUnido;
+    if (!fuente || fuente.length === 0) return;
+
+    const canvas = document.getElementById('chartSedeTotal');
+    if (!canvas) return;
+
+    // Destruir gráfico previo
+    if (
+        window.chartSedeTotal &&
+        typeof window.chartSedeTotal.destroy === 'function'
+    ) {
+        window.chartSedeTotal.destroy();
+    }
+
+    const conteo = contarSedesTotales(fuente);
+    const total = Object.values(conteo).reduce((a, b) => a + b, 0);
+
+    const labels = Object.keys(conteo).map(key => {
+        const value = conteo[key];
+        const pct = total ? ((value / total) * 100).toFixed(1) : 0;
+        return `${key} (${value} - ${pct}%)`;
+    });
+
+    window.chartSedeTotal = new Chart(canvas, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data: Object.values(conteo),
+                backgroundColor: [
+                    '#0d6efd', // Santiago
+                    '#198754', // Temuco
+                    '#6f42c1', // Santiago;Temuco
+                    '#adb5bd'  // Sin info
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function contarDependencias(data) {
+    const conteo = {};
+
+    data.forEach(row => {
+        const dep = row['Unidad o Dependencia Responsable (Iniciativas)'];
+
+        if (!dep || dep.trim() === '') return;
+
+        conteo[dep] = (conteo[dep] || 0) + 1;
+    });
+
+    return conteo;
+}
+
+function renderChartDependenciasIniciativas(data) {
+
+    const fuente = data.filter(
+        r => r['Estado (Iniciativas)'] === 'Enviada'
+    );
+
+    if (!fuente.length) return;
+
+    const canvas = document.getElementById('chartDependenciasIniciativas');
+    if (!canvas) return;
+
+    if (
+        window.chartDependenciasIniciativas &&
+        typeof window.chartDependenciasIniciativas.destroy === 'function'
+    ) {
+        window.chartDependenciasIniciativas.destroy();
+    }
+
+    const conteo = contarDependencias(fuente);
+
+    window.chartDependenciasIniciativas = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Iniciativas Enviadas',
+                data: Object.values(conteo),
+                backgroundColor: '#0d6efd'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderChartDependenciasSintesis(data) {
+
+    const fuente = data.filter(
+        r => r['Estado (Síntesis)'] === 'Enviada'
+    );
+
+    if (!fuente.length) return;
+
+    const canvas = document.getElementById('chartDependenciasSintesis');
+    if (!canvas) return;
+
+    if (
+        window.chartDependenciasSintesis &&
+        typeof window.chartDependenciasSintesis.destroy === 'function'
+    ) {
+        window.chartDependenciasSintesis.destroy();
+    }
+
+    const conteo = contarDependencias(fuente);
+
+    window.chartDependenciasSintesis = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Síntesis Enviadas',
+                data: Object.values(conteo),
+                backgroundColor: '#198754'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function contarDependencias(data) {
+
+    const conteo = {};
+
+    data.forEach(row => {
+        let dep = row['Unidad o Dependencia Responsable (Iniciativas)'];
+
+        if (!dep || String(dep).trim() === '') {
+            dep = 'Sin información';
+        }
+
+        conteo[dep] = (conteo[dep] || 0) + 1;
+    });
+
+    return conteo;
+}
+
+function renderChartDependenciasTotal(data = null) {
+
+    const fuente = data ?? window.dfUnido;
+    if (!fuente || fuente.length === 0) return;
+
+    const canvas = document.getElementById('chartDependenciasTotal');
+    const wrapper = document.getElementById('chartDependenciasTotalWrapper');
+
+    if (!canvas || !wrapper) return;
+
+    // destruir gráfico previo
+    if (
+        window.chartDependenciasTotal &&
+        typeof window.chartDependenciasTotal.destroy === 'function'
+    ) {
+        window.chartDependenciasTotal.destroy();
+    }
+
+    const conteo = contarDependencias(fuente);
+
+    const labels = Object.keys(conteo);
+    const values = Object.values(conteo);
+
+    const total = values.reduce((a, b) => a + b, 0);
+
+    window.chartDependenciasTotal = new Chart(canvas, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data: values
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const value = ctx.raw;
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return `${ctx.label}: ${value} (${percent}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 }

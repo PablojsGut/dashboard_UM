@@ -6,35 +6,28 @@ function applyFilters() {
         return;
     }
 
-    const sede = document.getElementById('filterSede').value;
-    const dependencia = document.getElementById('filterDependencia').value;
-    const subdependencia = document.getElementById('filterUnidad').value;
+    const sede = document.getElementById('filterSede')?.value || '';
+    const dependencia = document.getElementById('filterDependencia')?.value || '';
+    const subdependencia = document.getElementById('filterUnidad')?.value || '';
 
-    dfFiltrado = dfUnido.filter(row => {
+    // ======================
+    // FILTRADO BASE
+    // ======================
+    const dfFiltrado = dfUnido.filter(row => {
 
-        // ======================
         // FILTRO SEDE
-        // ======================
         if (sede) {
             const sedeRow = row['Sede (Iniciativas)'];
-            if (!sedeRow || sedeRow !== sede) {
-                return false;
-            }
+            if (!sedeRow || sedeRow !== sede) return false;
         }
 
-        // ======================
         // FILTRO DEPENDENCIA
-        // ======================
         if (dependencia) {
             const depRow = row['Unidad o Dependencia Responsable (Iniciativas)'];
-            if (!depRow || depRow !== dependencia) {
-                return false;
-            }
+            if (!depRow || depRow !== dependencia) return false;
         }
 
-        // ======================
         // FILTRO SUBDEPENDENCIA
-        // ======================
         if (subdependencia) {
             let match = false;
 
@@ -58,20 +51,60 @@ function applyFilters() {
     });
 
     // ======================
-    // ACTUALIZAR UI
+    // ACTUALIZAR UI GENERAL
     // ======================
     updateKPIsAmbas(dfFiltrado);
     renderAvanceFaseChart(dfFiltrado);
     renderCharts(dfFiltrado);
     renderChartsPorMes(dfFiltrado);
 
-    const chartsSection = document.getElementById('chartsSection');
-    if (chartsSection) {
-        chartsSection.classList.remove('d-none');
+    // ======================
+    // GRÁFICOS POR SEDE
+    // ======================
+    const chartSedeWrapper = document.getElementById('chartSedeWrapper');
+    const chartSedeSintesisWrapper = document.getElementById('chartSedeSintesisWrapper');
+    const chartSedeTotalWrapper = document.getElementById('chartSedeTotalWrapper');
+
+    if (!sede) {
+        chartSedeWrapper?.classList.remove('d-none');
+        chartSedeSintesisWrapper?.classList.remove('d-none');
+        chartSedeTotalWrapper?.classList.remove('d-none');
+
+        renderChartSede(dfFiltrado);          // Iniciativas (Estado Iniciativas = Enviada)
+        renderChartSedeSintesis(dfFiltrado);  // Síntesis (Estado Síntesis = Enviada)
+        renderChartSedeTotal(dfFiltrado);     // Total por sede (sin estado)
+    } else {
+        chartSedeWrapper?.classList.add('d-none');
+        chartSedeSintesisWrapper?.classList.add('d-none');
+        chartSedeTotalWrapper?.classList.add('d-none');
+    }
+    
+    // ======================
+    // GRÁFICOS POR DEPENDENCIA
+    // ======================
+    const chartDependenciasTotalWrapper = document.getElementById('chartDependenciasTotalWrapper');
+    const depIniWrapper = document.getElementById('chartDependenciasIniciativasWrapper');
+    const depSinWrapper = document.getElementById('chartDependenciasSintesisWrapper');
+
+    if (!dependencia) {
+        chartDependenciasTotalWrapper?.classList.remove('d-none');
+        depIniWrapper?.classList.remove('d-none');
+        depSinWrapper?.classList.remove('d-none');
+
+        renderChartDependenciasTotal(dfFiltrado);
+        renderChartDependenciasIniciativas(dfFiltrado); // Estado (Iniciativas) = Enviada
+        renderChartDependenciasSintesis(dfFiltrado);    // Estado (Sintesis) = Enviada
+    } else {
+        chartDependenciasTotalWrapper?.classList.add('d-none');
+        depIniWrapper?.classList.add('d-none');
+        depSinWrapper?.classList.add('d-none');
     }
 
+    // ======================
+    // MOSTRAR SECCIÓN GRÁFICOS
+    // ======================
+    document.getElementById('chartsSection')?.classList.remove('d-none');
 }
-
 
 /* ==============================
    CARGA DE FILTROS
