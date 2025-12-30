@@ -345,6 +345,18 @@
 
                 <div class="container mt-3">
 
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text um-search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input
+                            type="text"
+                            id="buscadorInput"
+                            class="form-control um-input"
+                            placeholder="Buscar por ID, Email o Nombre de la Iniciativa VcM…"
+                        >
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-dark table-hover align-middle">
                             <thead>
@@ -391,6 +403,135 @@
 
             </div>
 
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE REGISTRO -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+
+            <div class="modal-header flex-column align-items-start">
+
+                <h5 class="modal-title mb-1">
+                    <span id="modalDetalleNombreHeader"></span>
+                </h5>
+
+                <small class="text-muted">
+                    ID: <span id="modalDetalleIDHeader"></span>
+                </small>
+
+                <button
+                    type="button"
+                    class="btn-close position-absolute top-0 end-0 m-3"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+                <div class="d-flex align-items-center mt-4 mb-2">
+                    <h6 class="mb-0 fw-bold text-uppercase">
+                        Datos Postulante
+                    </h6>
+                </div>
+                <hr class="mt-1 mb-2">
+                <p><strong>Nombre:</strong> <span id="modalDetalleNombre"></span></p>
+                <p><strong>Email:</strong> <span id="modalDetalleEmail"></span></p>
+
+                <hr>
+                <div class="d-flex align-items-center mt-4 mb-2">
+                    <h6 class="mb-0 fw-bold text-uppercase">
+                        Iniciativa
+                    </h6>
+                </div>
+                <hr class="mt-1 mb-2">
+                <p><strong>Sede:</strong> <span id="modalDetalleSede"></span></p>
+
+                <p><strong>Modalidad:</strong> <span id="modalDetalleModalidad"></span></p>
+
+                <p><strong>Fecha Inicio:</strong> <span id="modalDetalleFechaInicio"></span></p>
+                <p><strong>Fecha Término:</strong> <span id="modalDetalleFechaTermino"></span></p>
+
+                <p><strong>Descripción:</strong></p>
+                <p id="modalDetalleDescripcion" class="small"></p>
+
+                <p><strong>Monto Financiamiento Requerido:</strong>
+                    <span id="modalDetalleMonto"></span>
+                </p>
+
+                <p><strong>Antigüedad Iniciativa:</strong>
+                    <span id="modalDetalleAntiguedad"></span>
+                </p>
+
+                <p><strong>Código VcM presupuesto anterior:</strong>
+                    <span id="modalDetalleCodigoVCM"></span>
+                </p>
+
+                <p><strong>Acceso:</strong>
+                    <span id="modalDetalleAcceso"></span>
+                </p>
+
+                <p><strong>Tipo de Acceso:</strong>
+                    <span id="modalDetalleTipoAcceso"></span>
+                </p>
+
+                <hr>
+
+                <div class="d-flex align-items-center mt-4 mb-2">
+                    <h6 class="mb-0 fw-bold text-uppercase">
+                        Mecanismos de Vinculación con el Medio
+                    </h6>
+                </div>
+                <hr class="mt-1 mb-2">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mecanismo VcM</th>
+                                <th class="text-center">Cumple</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Vinculación Académica - VA</td>
+                                <td class="text-center" id="mecanismoVA"></td>
+                            </tr>
+                            <tr>
+                                <td>Articulación e Intercambio de Conocimiento - AIC</td>
+                                <td class="text-center" id="mecanismoAIC"></td>
+                            </tr>
+                            <tr>
+                                <td>Vinculación Artístico-Cultural - VAC</td>
+                                <td class="text-center" id="mecanismoVAC"></td>
+                            </tr>
+                            <tr>
+                                <td>Investigación, Proyectos de Emprendimiento y Estudios - IPEE</td>
+                                <td class="text-center" id="mecanismoIPEE"></td>
+                            </tr>
+                            <tr>
+                                <td>Internacionalización - INT</td>
+                                <td class="text-center" id="mecanismoINT"></td>
+                            </tr>
+                            <tr>
+                                <td>Graduados/Titulados, Empleabilidad y Redes - GTER</td>
+                                <td class="text-center" id="mecanismoGTER"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                Cerrar
+                </button>
+            </div>
+
+            </div>
         </div>
     </div>
 

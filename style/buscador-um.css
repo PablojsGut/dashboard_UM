@@ -107,6 +107,38 @@
     outline: 2px solid #FBC11B;
 }
 
+/* ===============================
+   INPUT BUSCADOR - UM
+================================ */
+
+.um-input {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid var(--um-yellow);
+}
+
+.um-input::placeholder {
+    color: #cfcfcf;
+    opacity: 0.8;
+}
+
+.um-input:focus {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-color: var(--um-yellow);
+    box-shadow: 0 0 0 0.15rem rgba(251, 193, 27, 0.45);
+}
+
+/* icono de limpiar en Chrome */
+.um-input::-webkit-search-cancel-button {
+    filter: invert(1);
+}
+
+.um-search-icon {
+    background-color: #1e1e1e;
+    color: var(--um-yellow);
+    border: 1px solid var(--um-yellow);
+}
 
 /* ============================
    RESPONSIVE
