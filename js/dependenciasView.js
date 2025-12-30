@@ -46,73 +46,33 @@ function getDependencias() {
 ================================ */
 function getSubdependencias(dependencia) {
 
-    if (!window.dfIniciativas || !dfIniciativas.all || !dependencia) {
-        return [];
-    }
+    if (!window.dfUnido || !dependencia) return [];
 
-    /* MAPA DEP → COLUMNAS */
-    const subdependenciaMap = {
-        'Facultad de Ciencias Sociales y Artes': [
-            'Escuela/Carrera Facultad de Ciencias Sociales y Artes'
-        ],
+    // normalizada -> versión bonita
+    const map = new Map();
 
-        'Facultad de Ciencias, Ingeniería y Tecnología': [
-            'Escuela/Carrera Facultad de Ciencias, Ingeniería y Tecnología'
-        ],
+    dfUnido.forEach(row => {
 
-        'Facultad de Medicina y Ciencias de la Salud': [
-            'Facultad de Medicina y Ciencias de la Salud'
-        ],
+        if (
+            row['Unidad o Dependencia Responsable (Iniciativas)'] !== dependencia
+        ) return;
 
-        'Centros de Investigación': [
-            'Centro de Investigación'
-        ],
+        const raw = String(
+            row['Unidad Académica (Iniciativas)'] || ''
+        ).replace(/&nbsp;/g, ' ').trim();
 
-        'Programas de Postgrado': [
-            'Programas de Postgrado'
-        ],
+        if (!raw) return;
 
-        'Otras Unidades': [
-            'Otras Unidades No Académicas',
-            'Otras Unidades No Académicas'
-        ]
-    };
+        const normalizada = normalizeText(raw);
 
-    const cols = subdependenciaMap[dependencia];
-    const map = new Map(); // normalizada → bonita
+        if (!normalizada) return;
 
-    dfIniciativas.all.forEach(row => {
-
-        if (row['Unidad o Dependencia Responsable'] !== dependencia) {
-            return;
-        }
-
-        if (!cols) {
-            map.set('sin subdependencia', 'Sin subdependencia');
-            return;
-        }
-
-        let encontrada = false;
-
-        cols.forEach(col => {
-            const val = row[col];
-
-            if (val && String(val).trim() !== '') {
-                const normalizada = normalizeText(val);
-                if (normalizada) {
-                    map.set(
-                        normalizada,
-                        prettyText(normalizada)
-                    );
-                    encontrada = true;
-                }
-            }
-        });
-
-        if (!encontrada) {
-            map.set('sin subdependencia', 'Sin subdependencia');
+        // guardar solo una versión bonita por clave normalizada
+        if (!map.has(normalizada)) {
+            map.set(normalizada, prettyText(normalizada));
         }
     });
 
     return [...map.values()].sort();
 }
+

@@ -82,6 +82,9 @@ function construirDataframes() {
         initFiltrosDependencias();
     }
 
+    // inicializar buscador
+    initBuscador(dfUnido);
+
     showAlert('✅ Excel unidos y listos para descargar', 'success');
 }
 
@@ -137,6 +140,48 @@ function buildDfSintesis(headers, data) {
     });
 }
 
+function obtenerUnidadAcademica(headers, row) {
+
+    const columnasUnidad = [
+        'Escuela/Carrera Facultad de Ciencias Sociales y Artes',
+        'Escuela/Carrera Facultad de Ciencias, Ingeniería y Tecnología',
+        'Facultad de Medicina y Ciencias de la Salud',
+        'Centro de Investigación',
+        'Programas de Postgrado',
+        'Otras Unidades No Académicas',
+        'Otras Unidades No Académicas' // texto libre
+    ];
+
+    let valorOtra = '';
+
+    for (let i = 0; i < headers.length; i++) {
+        const h = headers[i];
+        const v = String(row[i] ?? '').trim();
+
+        if (!columnasUnidad.includes(h) || !v) continue;
+
+        // Caso especial "Otra"
+        if (h === 'Otras Unidades No Académicas') {
+            if (v.toLowerCase() === 'otra') {
+                valorOtra = v;
+                continue;
+            }
+        }
+
+        return v;
+    }
+
+    // Si se eligió "Otra", usar la segunda columna
+    if (valorOtra) {
+        const idxOtraLibre = headers.lastIndexOf('Otras Unidades No Académicas');
+        const libre = String(row[idxOtraLibre] ?? '').trim();
+        if (libre) return libre;
+    }
+
+    return 'Sin información';
+}
+
+
 /* ===============================
    UNIÓN POR ID
 ================================ */
@@ -155,6 +200,15 @@ function unirExcelsPorID(headersF1, dataF1, headersF2, dataF2) {
         mapF2.set(String(r[idx2]).trim(), r);
     });
 
+    const columnasUnidadEliminar = [
+        'Escuela/Carrera Facultad de Ciencias Sociales y Artes',
+        'Escuela/Carrera Facultad de Ciencias, Ingeniería y Tecnología',
+        'Facultad de Medicina y Ciencias de la Salud',
+        'Centro de Investigación',
+        'Programas de Postgrado',
+        'Otras Unidades No Académicas'
+    ];
+
     const unidos = [];
 
     dataF1.forEach(r1 => {
@@ -164,9 +218,20 @@ function unirExcelsPorID(headersF1, dataF1, headersF2, dataF2) {
 
         const obj = { ID: id };
 
+        // 👉 calcular Unidad Académica
+        const unidadAcademica = obtenerUnidadAcademica(headersF1, r1);
+
         headersF1.forEach((h, i) => {
-            if (h.toLowerCase() !== 'id') {
-                obj[`${h} (Iniciativas)`] = r1[i];
+
+            if (h.toLowerCase() === 'id') return;
+            if (columnasUnidadEliminar.includes(h)) return;
+
+            const key = `${h} (Iniciativas)`;
+            obj[key] = r1[i] ?? '';
+
+            // 👇 INSERTAR INMEDIATAMENTE DESPUÉS
+            if (h === 'Unidad o Dependencia Responsable') {
+                obj['Unidad Académica (Iniciativas)'] = unidadAcademica;
             }
         });
 

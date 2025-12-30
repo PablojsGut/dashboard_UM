@@ -1,0 +1,128 @@
+/* ============================
+   COLORES INSTITUCIONALES UM
+============================ */
+:root {
+    --um-yellow: #FBC11B;
+    --um-blue: #13343B;
+    --um-blue-dark: #0f2a30;
+    --um-gray: #f4f6f7;
+}
+
+/* ============================
+   CONTENEDOR BUSCADOR
+============================ */
+#tabBuscador .container {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    border-top: 4px solid var(--um-yellow);
+}
+
+/* ============================
+   TABLA
+============================ */
+#tabBuscador table {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+/* HEADER */
+#tabBuscador thead {
+    background-color: var(--um-blue);
+}
+
+#tabBuscador thead th {
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: none;
+    white-space: nowrap;
+}
+
+/* FILAS */
+#tabBuscador tbody tr {
+    background-color: #ffffff;
+    color: var(--um-blue-dark);
+    transition: background-color 0.15s ease;
+}
+
+#tabBuscador tbody tr:hover {
+    background-color: rgba(251, 193, 27, 0.12);
+}
+
+/* CELDAS */
+#tabBuscador tbody td {
+    font-size: 0.82rem;
+    vertical-align: middle;
+    border-color: #e6e9ec;
+    white-space: nowrap;
+}
+
+/* ============================
+   PAGINACIÓN
+============================ */
+#tabBuscador .pagination {
+    margin-top: 1rem;
+}
+
+/* ITEM */
+#tabBuscador .page-item .page-link {
+    color: var(--um-blue);
+    border: 1px solid #dee2e6;
+    font-weight: 600;
+    font-size: 0.8rem;
+    min-width: 36px;
+    text-align: center;
+}
+
+/* HOVER */
+#tabBuscador .page-item .page-link:hover {
+    background-color: var(--um-yellow);
+    color: var(--um-blue);
+    border-color: var(--um-yellow);
+}
+
+/* ACTIVO */
+#tabBuscador .page-item.active .page-link {
+    background-color: var(--um-blue);
+    border-color: var(--um-blue);
+    color: #ffffff;
+}
+
+/* DESHABILITADO */
+#tabBuscador .page-item.disabled .page-link {
+    color: #adb5bd;
+    background-color: #ffffff;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* FILA SELECCIONADA BUSCADOR */
+.table tbody tr.row-selected {
+    background-color: rgba(251, 193, 27, 0.25) !important; /* UM Yellow */
+    outline: 2px solid #FBC11B;
+}
+
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 768px) {
+
+    #tabBuscador thead th {
+        font-size: 0.7rem;
+    }
+
+    #tabBuscador tbody td {
+        font-size: 0.75rem;
+    }
+
+    #tabBuscador .page-item .page-link {
+        min-width: 32px;
+        font-size: 0.75rem;
+    }
+}

@@ -1,4 +1,9 @@
 //filtersLogic.js
+function extraerMecanismo(valor) {
+    if (!valor) return '';
+    return String(valor).split(':')[0].trim();
+}
+
 function applyFilters() {
 
     if (!window.dfUnido || dfUnido.length === 0) {
@@ -6,45 +11,61 @@ function applyFilters() {
         return;
     }
 
-    const sede = document.getElementById('filterSede')?.value || '';
-    const dependencia = document.getElementById('filterDependencia')?.value || '';
-    const subdependencia = document.getElementById('filterUnidad')?.value || '';
+    const sede =
+        document.getElementById('filterSede')?.value || '';
+    const dependencia =
+        document.getElementById('filterDependencia')?.value || '';
+    const subdependencia =
+        document.getElementById('filterUnidad')?.value || '';
+    const mecanismo =
+        document.getElementById('filterMecanismo')?.value || '';
 
-    // ======================
-    // FILTRADO BASE
-    // ======================
+    const subNorm = normalizeText(subdependencia);
+
     const dfFiltrado = dfUnido.filter(row => {
 
+        // ======================
         // FILTRO SEDE
+        // ======================
         if (sede) {
-            const sedeRow = row['Sede (Iniciativas)'];
-            if (!sedeRow || sedeRow !== sede) return false;
+            if (
+                String(row['Sede (Iniciativas)'] || '') !== sede
+            ) return false;
         }
 
+        // ======================
         // FILTRO DEPENDENCIA
+        // ======================
         if (dependencia) {
-            const depRow = row['Unidad o Dependencia Responsable (Iniciativas)'];
-            if (!depRow || depRow !== dependencia) return false;
+            if (
+                String(
+                    row['Unidad o Dependencia Responsable (Iniciativas)'] || ''
+                ) !== dependencia
+            ) return false;
         }
 
-        // FILTRO SUBDEPENDENCIA
+        // ======================
+        // FILTRO UNIDAD ACADÉMICA (FIX DEFINITIVO)
+        // ======================
         if (subdependencia) {
-            let match = false;
 
-            Object.keys(row).forEach(k => {
-                if (
-                    k.includes('Escuela/Carrera') ||
-                    k.includes('Programas de Postgrado') ||
-                    k.includes('Centro de Investigación') ||
-                    k.includes('Otras Unidades No Académicas')
-                ) {
-                    if (row[k] === subdependencia) {
-                        match = true;
-                    }
-                }
-            });
+            const unidad = String(
+                row['Unidad Académica (Iniciativas)'] || ''
+            ).replace(/&nbsp;/g, ' ').trim();
 
-            if (!match) return false;
+            if (!unidad) return false;
+
+            const unidadNorm = normalizeText(unidad);
+
+            if (unidadNorm !== subNorm) return false;
+        }
+
+        if (mecanismo) {
+            const raw =
+                row['Mecanismo VcM sugerido (Iniciativas)'];
+            const mecRow = extraerMecanismo(raw);
+
+            if (mecRow !== mecanismo) return false;
         }
 
         return true;
@@ -61,30 +82,36 @@ function applyFilters() {
     // ======================
     // GRÁFICOS POR SEDE
     // ======================
-    const chartSedeWrapper = document.getElementById('chartSedeWrapper');
-    const chartSedeSintesisWrapper = document.getElementById('chartSedeSintesisWrapper');
-    const chartSedeTotalWrapper = document.getElementById('chartSedeTotalWrapper');
+    const chartSedeWrapper =
+        document.getElementById('chartSedeWrapper');
+    const chartSedeSintesisWrapper =
+        document.getElementById('chartSedeSintesisWrapper');
+    const chartSedeTotalWrapper =
+        document.getElementById('chartSedeTotalWrapper');
 
     if (!sede) {
         chartSedeWrapper?.classList.remove('d-none');
         chartSedeSintesisWrapper?.classList.remove('d-none');
         chartSedeTotalWrapper?.classList.remove('d-none');
 
-        renderChartSede(dfFiltrado);          // Iniciativas (Estado Iniciativas = Enviada)
-        renderChartSedeSintesis(dfFiltrado);  // Síntesis (Estado Síntesis = Enviada)
-        renderChartSedeTotal(dfFiltrado);     // Total por sede (sin estado)
+        renderChartSede(dfFiltrado);
+        renderChartSedeSintesis(dfFiltrado);
+        renderChartSedeTotal(dfFiltrado);
     } else {
         chartSedeWrapper?.classList.add('d-none');
         chartSedeSintesisWrapper?.classList.add('d-none');
         chartSedeTotalWrapper?.classList.add('d-none');
     }
-    
+
     // ======================
     // GRÁFICOS POR DEPENDENCIA
     // ======================
-    const chartDependenciasTotalWrapper = document.getElementById('chartDependenciasTotalWrapper');
-    const depIniWrapper = document.getElementById('chartDependenciasIniciativasWrapper');
-    const depSinWrapper = document.getElementById('chartDependenciasSintesisWrapper');
+    const chartDependenciasTotalWrapper =
+        document.getElementById('chartDependenciasTotalWrapper');
+    const depIniWrapper =
+        document.getElementById('chartDependenciasIniciativasWrapper');
+    const depSinWrapper =
+        document.getElementById('chartDependenciasSintesisWrapper');
 
     if (!dependencia) {
         chartDependenciasTotalWrapper?.classList.remove('d-none');
@@ -92,19 +119,20 @@ function applyFilters() {
         depSinWrapper?.classList.remove('d-none');
 
         renderChartDependenciasTotal(dfFiltrado);
-        renderChartDependenciasIniciativas(dfFiltrado); // Estado (Iniciativas) = Enviada
-        renderChartDependenciasSintesis(dfFiltrado);    // Estado (Sintesis) = Enviada
+        renderChartDependenciasIniciativas(dfFiltrado);
+        renderChartDependenciasSintesis(dfFiltrado);
     } else {
         chartDependenciasTotalWrapper?.classList.add('d-none');
         depIniWrapper?.classList.add('d-none');
         depSinWrapper?.classList.add('d-none');
     }
 
-    // ======================
-    // MOSTRAR SECCIÓN GRÁFICOS
-    // ======================
-    document.getElementById('chartsSection')?.classList.remove('d-none');
+    document.getElementById('chartsSection')
+        ?.classList.remove('d-none');
+
+    initBuscador(dfFiltrado);
 }
+
 
 /* ==============================
    CARGA DE FILTROS
@@ -114,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cboDependencia = document.getElementById('filterDependencia');
     const cboUnidad = document.getElementById('filterUnidad');
+    const cboMecanismo = document.getElementById('filterMecanismo');
 
     if (!cboDependencia || !cboUnidad) return;
 
@@ -159,6 +188,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function cargarMecanismos() {
+
+        if (!window.dfUnido || !cboMecanismo) return;
+
+        const set = new Set();
+
+        dfUnido.forEach(row => {
+            const raw =
+                row['Mecanismo VcM sugerido (Iniciativas)'];
+            const mec = extraerMecanismo(raw);
+            if (mec) set.add(mec);
+        });
+
+        cboMecanismo.innerHTML =
+            '<option value="">Todos los mecanismos</option>';
+
+        [...set].sort().forEach(mec => {
+            const opt = document.createElement('option');
+            opt.value = mec;
+            opt.textContent = mec;
+            cboMecanismo.appendChild(opt);
+        });
+    }
+
     /* ==============================
        EVENTOS
     ================================ */
@@ -172,5 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ================================ */
     window.initFiltrosDependencias = function () {
         cargarDependencias();
+        cargarMecanismos();
     };
 });

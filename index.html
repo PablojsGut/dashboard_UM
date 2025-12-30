@@ -137,6 +137,16 @@
                     <option value="">Todas las unidades</option>
                 </select>
             </div>
+
+            <!-- Mecanismo VcM -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="filterMecanismo" class="form-label">
+                    Mecanismo VcM
+                </label>
+                <select id="filterMecanismo" class="form-select">
+                    <option value="">Todos los mecanismos</option>
+                </select>
+            </div>
         </div>
 
         <!-- BOTONES -->
@@ -155,113 +165,230 @@
         <div class="kpis-grid" id="kpisContainer"></div>
     </div>
 
-    <!-- GRÁFICOS -->
-    <div class="container mt-4 d-none" id="chartsSection">
+    <!-- TABS -->
+    <div class="container mt-4">
 
-        <div class="row g-4">
+        <!-- NAV TABS -->
+        <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button
+                    class="nav-link active"
+                    id="resumen-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tabResumen"
+                    type="button"
+                    role="tab">
+                    Resumen
+                </button>
+            </li>
 
-            <!-- Avance Fase -->
-            <div class="col-12">
-                <div class="chart-card chart-card-lg">
-                    <h6 class="chart-title text-center">
-                        Avance de Fase 1 → Fase 2
-                    </h6>
-                    <canvas id="chartAvanceFase"></canvas>
+            <li class="nav-item" role="presentation">
+                <button
+                    class="nav-link"
+                    id="buscador-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tabBuscador"
+                    type="button"
+                    role="tab">
+                    Buscador
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button
+                    class="nav-link"
+                    id="analisis-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tabAnalisis"
+                    type="button"
+                    role="tab">
+                    Análisis
+                </button>
+            </li>
+        </ul>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content pt-4">
+
+            <!-- =========================
+                TAB RESUMEN (GRÁFICOS)
+            ========================== -->
+            <div
+                class="tab-pane fade show active"
+                id="tabResumen"
+                role="tabpanel">
+
+                <!-- GRÁFICOS -->
+                <div class="container d-none" id="chartsSection">
+
+                    <div class="row g-4">
+
+                        <!-- Avance Fase -->
+                        <div class="col-12">
+                            <div class="chart-card chart-card-lg">
+                                <h6 class="chart-title text-center">
+                                    Avance de Fase 1 → Fase 2
+                                </h6>
+                                <canvas id="chartAvanceFase"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Estados -->
+                        <div class="col-12 col-md-6">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Estado Iniciativas
+                                </h6>
+                                <canvas id="chartEstadoIniciativas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Estado Síntesis
+                                </h6>
+                                <canvas id="chartEstadoSintesis"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- TOTAL REGISTROS POR SEDE -->
+                        <div class="col-12 d-none" id="chartSedeTotalWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Distribución Total de Registros por Sede
+                                </h6>
+                                <canvas id="chartSedeTotal"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- SEDES INICIATIVAS -->
+                        <div class="col-12 col-md-6" id="chartSedeWrapper">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Distribución por Sede (Iniciativas)
+                                </h6>
+                                <canvas id="chartSedeIniciativas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- SEDES SÍNTESIS -->
+                        <div class="col-12 col-md-6" id="chartSedeSintesisWrapper">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Distribución por Sede (Síntesis)
+                                </h6>
+                                <canvas id="chartSedeSintesis"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- DISTRIBUCIÓN POR DEPENDENCIA (TOTAL) -->
+                        <div class="col-12 d-none" id="chartDependenciasTotalWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Distribución total por Dependencia
+                                </h6>
+                                <canvas id="chartDependenciasTotal"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- DEPENDENCIAS -->
+                        <div class="col-12 col-md-6 d-none" id="chartDependenciasIniciativasWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Iniciativas Enviadas por Dependencia
+                                </h6>
+                                <canvas id="chartDependenciasIniciativas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 d-none" id="chartDependenciasSintesisWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Síntesis Enviadas por Dependencia
+                                </h6>
+                                <canvas id="chartDependenciasSintesis"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Iniciativas por mes -->
+                        <div class="col-12">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Iniciativas enviadas por mes
+                                </h6>
+                                <div id="chartsIniciativasPorMes"></div>
+                            </div>
+                        </div>
+
+                        <!-- Síntesis por mes -->
+                        <div class="col-12">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Síntesis enviadas por mes
+                                </h6>
+                                <div id="chartsSintesisPorMes"></div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
-            <!-- Estados -->
-            <div class="col-12 col-md-6">
-                <div class="chart-card chart-card-sm">
-                    <h6 class="chart-title text-center">Estado Iniciativas</h6>
-                    <canvas id="chartEstadoIniciativas"></canvas>
+            <!-- =========================
+                TAB BUSCADOR
+            ========================== -->
+            <div
+                class="tab-pane fade"
+                id="tabBuscador"
+                role="tabpanel">
+
+                <div class="container mt-3">
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>Nombre de la Iniciativa VcM</th>
+                                    <th>Dependencia Responsable</th>
+                                    <th>Unidad Académica</th>
+                                    <th>Estado F1</th>
+                                    <th>Estado F2</th>
+                                    <th>Nota F1</th>
+                                    <th>Nota F2</th>
+                                </tr>
+                            </thead>
+                            <tbody id="buscadorTableBody">
+                                <!-- filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PAGINACIÓN -->
+                    <nav class="d-flex justify-content-center">
+                        <ul class="pagination pagination-sm" id="buscadorPagination">
+                            <!-- botones dinámicos -->
+                        </ul>
+                    </nav>
+
                 </div>
             </div>
 
-            <div class="col-12 col-md-6">
-                <div class="chart-card chart-card-sm">
-                    <h6 class="chart-title text-center">Estado Síntesis</h6>
-                    <canvas id="chartEstadoSintesis"></canvas>
-                </div>
-            </div>
+            <!-- =========================
+                TAB ANÁLISIS
+            ========================== -->
+            <div
+                class="tab-pane fade"
+                id="tabAnalisis"
+                role="tabpanel">
 
-            <!-- TOTAL REGISTROS POR SEDE -->
-            <div class="col-12 d-none" id="chartSedeTotalWrapper">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Distribución Total de Registros por Sede
-                    </h6>
-                    <canvas id="chartSedeTotal"></canvas>
+                <div class="text-muted text-center py-5">
+                    📊 Análisis (pendiente)
                 </div>
-            </div>
 
-            <!-- SEDES INICIATIVAS -->
-            <div class="col-12 col-md-6" id="chartSedeWrapper">
-                <div class="chart-card chart-card-sm">
-                    <h6 class="chart-title text-center">
-                        Distribución por Sede (Iniciativas)
-                    </h6>
-                    <canvas id="chartSedeIniciativas"></canvas>
-                </div>
-            </div>
-
-            <!-- SEDES SÍNTESIS -->
-            <div class="col-12 col-md-6" id="chartSedeSintesisWrapper">
-                <div class="chart-card chart-card-sm">
-                    <h6 class="chart-title text-center">
-                        Distribución por Sede (Síntesis)
-                    </h6>
-                    <canvas id="chartSedeSintesis"></canvas>
-                </div>
-            </div>
-
-            <!-- DISTRIBUCIÓN POR DEPENDENCIA (TOTAL) -->
-            <div class="col-12 d-none" id="chartDependenciasTotalWrapper">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Distribución total por Dependencia
-                    </h6>
-                    <canvas id="chartDependenciasTotal"></canvas>
-                </div>
-            </div>
-
-            <!-- DEPENDENCIAS -->
-            <div class="col-12 col-md-6 d-none" id="chartDependenciasIniciativasWrapper">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Iniciativas Enviadas por Dependencia
-                    </h6>
-                    <canvas id="chartDependenciasIniciativas"></canvas>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 d-none" id="chartDependenciasSintesisWrapper">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Síntesis Enviadas por Dependencia
-                    </h6>
-                    <canvas id="chartDependenciasSintesis"></canvas>
-                </div>
-            </div>
-
-            <!-- Iniciativas por mes -->
-            <div class="col-12">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Iniciativas enviadas por mes
-                    </h6>
-                    <div id="chartsIniciativasPorMes"></div>
-                </div>
-            </div>
-
-            <!-- Síntesis por mes -->
-            <div class="col-12">
-                <div class="chart-card chart-card-md">
-                    <h6 class="chart-title text-center">
-                        Síntesis enviadas por mes
-                    </h6>
-                    <div id="chartsSintesisPorMes"></div>
-                </div>
             </div>
 
         </div>
@@ -275,6 +402,7 @@
     <script src="js/columnsConfig.js"></script>
     <script src="js/excelValidator.js"></script>
     <script src="js/alert.js"></script>
+    <script src="js/buscadorLogic.js"></script>
     <script src="js/excelLogic.js"></script>
     <script src="js/excelExport.js"></script>
     <script src="js/kpis.js"></script>
