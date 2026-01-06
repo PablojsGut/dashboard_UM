@@ -129,8 +129,14 @@ function applyFilters() {
 
     document.getElementById('chartsSection')
         ?.classList.remove('d-none');
+    document.getElementById('tabsSection')
+        ?.classList.remove('d-none');
 
     initBuscador(dfFiltrado);
+    renderChartVCMIniciativas(dfFiltrado);
+    renderChartVCMSintesis(dfFiltrado);
+    renderChartMecanismoIniciativas(dfFiltrado);
+    renderChartMecanismoSintesis(dfFiltrado);
 }
 
 
@@ -228,3 +234,63 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarMecanismos();
     };
 });
+
+function clearFilters() {
+
+    // ======================
+    // RESET SELECTS
+    // ======================
+    const filterSede = document.getElementById('filterSede');
+    const filterDependencia = document.getElementById('filterDependencia');
+    const filterUnidad = document.getElementById('filterUnidad');
+    const filterMecanismo = document.getElementById('filterMecanismo');
+
+    if (filterSede) filterSede.value = '';
+    if (filterDependencia) filterDependencia.value = '';
+    if (filterMecanismo) filterMecanismo.value = '';
+
+    if (filterUnidad) {
+        filterUnidad.innerHTML =
+            '<option value="">Todas las unidades</option>';
+    }
+
+    // ======================
+    // OCULTAR SECCIONES
+    // ======================
+    document.getElementById('chartsSection')
+        ?.classList.add('d-none');
+
+    document.getElementById('tabsSection')
+        ?.classList.add('d-none');
+
+    // ======================
+    // LIMPIAR KPIs
+    // ======================
+    const kpisContainer = document.getElementById('kpisContainer');
+    if (kpisContainer) {
+        kpisContainer.innerHTML = '';
+    }
+
+    // ======================
+    // LIMPIAR BUSCADOR
+    // ======================
+    const buscadorInput = document.getElementById('buscadorInput');
+    if (buscadorInput) buscadorInput.value = '';
+
+    const buscadorTableBody =
+        document.getElementById('buscadorTableBody');
+    if (buscadorTableBody) {
+        buscadorTableBody.innerHTML = '';
+    }
+
+    const buscadorPagination =
+        document.getElementById('buscadorPagination');
+    if (buscadorPagination) {
+        buscadorPagination.innerHTML = '';
+    }
+
+    // ======================
+    // MENSAJE OPCIONAL
+    // ======================
+    showAlert('↻ Filtros limpiados correctamente', 'info');
+}

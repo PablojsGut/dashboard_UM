@@ -177,7 +177,7 @@
     </div>
 
     <!-- TABS -->
-    <div class="container mt-4">
+    <div class="container mt-4 d-none" id="tabsSection">
 
         <!-- NAV TABS -->
         <ul class="nav nav-tabs" id="mainTabs" role="tablist">
@@ -248,7 +248,7 @@
                         <div class="col-12 col-md-6">
                             <div class="chart-card chart-card-sm">
                                 <h6 class="chart-title text-center">
-                                    Estado Iniciativas
+                                    Estado Fase 1
                                 </h6>
                                 <canvas id="chartEstadoIniciativas"></canvas>
                             </div>
@@ -257,7 +257,7 @@
                         <div class="col-12 col-md-6">
                             <div class="chart-card chart-card-sm">
                                 <h6 class="chart-title text-center">
-                                    Estado Síntesis
+                                    Estado Fase 2
                                 </h6>
                                 <canvas id="chartEstadoSintesis"></canvas>
                             </div>
@@ -277,7 +277,7 @@
                         <div class="col-12 col-md-6" id="chartSedeWrapper">
                             <div class="chart-card chart-card-sm">
                                 <h6 class="chart-title text-center">
-                                    Distribución por Sede (Iniciativas)
+                                    Distribución por Sede (Fase 1)
                                 </h6>
                                 <canvas id="chartSedeIniciativas"></canvas>
                             </div>
@@ -287,7 +287,7 @@
                         <div class="col-12 col-md-6" id="chartSedeSintesisWrapper">
                             <div class="chart-card chart-card-sm">
                                 <h6 class="chart-title text-center">
-                                    Distribución por Sede (Síntesis)
+                                    Distribución por Sede (Fase 2)
                                 </h6>
                                 <canvas id="chartSedeSintesis"></canvas>
                             </div>
@@ -307,7 +307,7 @@
                         <div class="col-12 col-md-6 d-none" id="chartDependenciasIniciativasWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
-                                    Iniciativas Enviadas por Dependencia
+                                    Distribución por Dependencia (Fase 1)
                                 </h6>
                                 <canvas id="chartDependenciasIniciativas"></canvas>
                             </div>
@@ -316,17 +316,52 @@
                         <div class="col-12 col-md-6 d-none" id="chartDependenciasSintesisWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
-                                    Síntesis Enviadas por Dependencia
+                                    Distribución por Dependencia (Fase 2)
                                 </h6>
                                 <canvas id="chartDependenciasSintesis"></canvas>
                             </div>
                         </div>
 
+                        <!-- ============================= -->
+                        <!-- DISTRIBUCIÓN POR UNIDAD ACADÉMICA -->
+                        <!-- ============================= -->
+
+                        <!-- TOTAL -->
+                        <div class="col-12 d-none" id="chartUnidadesTotalWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Distribución total por Unidad Académica
+                                </h6>
+                                <canvas id="chartUnidadesTotal"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- FASE 1 -->
+                        <div class="col-12 col-md-6 d-none" id="chartUnidadesIniciativasWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Distribución por Unidad Académica (Fase 1)
+                                </h6>
+                                <canvas id="chartUnidadesIniciativas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- FASE 2 -->
+                        <div class="col-12 col-md-6 d-none" id="chartUnidadesSintesisWrapper">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Distribución por Unidad Académica (Fase 2)
+                                </h6>
+                                <canvas id="chartUnidadesSintesis"></canvas>
+                            </div>
+                        </div>
+
+
                         <!-- Iniciativas por mes -->
                         <div class="col-12">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
-                                    Iniciativas enviadas por mes
+                                    Registros Enviados por Mes (Fase 1)
                                 </h6>
                                 <div id="chartsIniciativasPorMes"></div>
                             </div>
@@ -336,7 +371,7 @@
                         <div class="col-12">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
-                                    Síntesis enviadas por mes
+                                    Registros Enviados por Mes (Fase 2)
                                 </h6>
                                 <div id="chartsSintesisPorMes"></div>
                             </div>
@@ -408,10 +443,32 @@
                 id="tabAnalisis"
                 role="tabpanel">
 
-                <div class="text-muted text-center py-5">
-                    📊 Análisis (pendiente)
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="chart-card chart-card-sm">
+                            <h6 class="chart-title text-center">
+                                Mecanismo VcM – Iniciativas Enviadas
+                            </h6>
+                            <canvas id="chartMecanismoIniciativas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="chart-card chart-card-sm">
+                            <h6 class="chart-title text-center">
+                                Mecanismo VcM – Síntesis Enviadas
+                            </h6>
+                            <canvas id="chartMecanismoSintesis"></canvas>
+                        </div>
+                    </div>
                 </div>
 
+                <div style="height: 400px;">
+                    <canvas id="chartVCMIniciativas"></canvas>
+                </div>
+                <div style="height: 400px;">
+                    <canvas id="chartVCMSintesis"></canvas>
+                </div>
             </div>
 
         </div>
@@ -444,7 +501,7 @@
             <div class="modal-body">
                 <div class="d-flex align-items-center mt-4 mb-2">
                     <h6 class="mb-0 fw-bold text-uppercase">
-                        Datos Postulante
+                        Postulante
                     </h6>
                 </div>
                 <hr class="mt-1 mb-2">
@@ -601,5 +658,6 @@
     <script src="js/dependenciasView.js"></script>
     <script src="js/filtersLogic.js"></script>
     <script src="js/chartsLogic.js"></script>
+    <script src="js/chartAnalisis.js"></script>
 </body>
 </html>

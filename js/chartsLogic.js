@@ -192,7 +192,7 @@ function agruparPorAnoMes(data, columnaFecha) {
 /* ==============================
    BARRAS POR AÑO (SIN TÍTULO)
 ================================ */
-function crearBarChartPorAno(containerId, agrupado) {
+function crearLineChartPorAno(containerId, agrupado) {
 
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -215,12 +215,18 @@ function crearBarChartPorAno(containerId, agrupado) {
         container.appendChild(wrapper);
 
         new Chart(canvas, {
-            type: 'bar',
+            type: 'line', // 👈 CAMBIO CLAVE
             data: {
                 labels: meses,
                 datasets: [{
+                    label: year,
                     data: valores,
-                    backgroundColor: '#0d6efd'
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.15)',
+                    fill: true,
+                    tension: 0.35, // suaviza la línea
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
@@ -251,12 +257,12 @@ function renderChartsPorMes(data = null) {
     const fuente = data ?? window.dfUnido;
     if (!fuente || fuente.length === 0) return;
 
-    crearBarChartPorAno(
+    crearLineChartPorAno(
         'chartsIniciativasPorMes',
         agruparPorAnoMes(fuente, 'Fecha envío (Iniciativas)')
     );
 
-    crearBarChartPorAno(
+    crearLineChartPorAno(
         'chartsSintesisPorMes',
         agruparPorAnoMes(fuente, 'Fecha envío (Síntesis)')
     );
@@ -645,6 +651,115 @@ function renderChartDependenciasTotal(data = null) {
                 legend: {
                     position: 'right'
                 },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const value = ctx.raw;
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return `${ctx.label}: ${value} (${percent}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function contarUnidadesAcademicas(data) {
+    const conteo = {};
+    data.forEach(row => {
+        let unidad = row['Unidad Académica (Iniciativas)'];
+        if (!unidad || String(unidad).trim() === '') unidad = 'Sin información';
+        unidad = String(unidad).replace(/&nbsp;/g, ' ').trim();
+        conteo[unidad] = (conteo[unidad] || 0) + 1;
+    });
+    return conteo;
+}
+
+function renderChartUnidadesIniciativas(data) {
+    const fuente = data.filter(r => r['Estado (Iniciativas)'] === 'Enviada');
+    if (!fuente.length) return;
+
+    const canvas = document.getElementById('chartUnidadesIniciativas');
+    if (!canvas) return;
+
+    if (window.chartUnidadesIniciativas?.destroy) window.chartUnidadesIniciativas.destroy();
+
+    const conteo = contarUnidadesAcademicas(fuente);
+
+    window.chartUnidadesIniciativas = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Iniciativas Enviadas',
+                data: Object.values(conteo),
+                backgroundColor: '#0d6efd'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, title: { display: true, text: 'Cantidad' } } }
+        }
+    });
+}
+
+function renderChartUnidadesSintesis(data) {
+    const fuente = data.filter(r => r['Estado (Síntesis)'] === 'Enviada');
+    if (!fuente.length) return;
+
+    const canvas = document.getElementById('chartUnidadesSintesis');
+    if (!canvas) return;
+
+    if (window.chartUnidadesSintesis?.destroy) window.chartUnidadesSintesis.destroy();
+
+    const conteo = contarUnidadesAcademicas(fuente);
+
+    window.chartUnidadesSintesis = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(conteo),
+            datasets: [{
+                label: 'Síntesis Enviadas',
+                data: Object.values(conteo),
+                backgroundColor: '#198754'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, title: { display: true, text: 'Cantidad' } } }
+        }
+    });
+}
+
+function renderChartUnidadesTotal(data = null) {
+    const fuente = data ?? window.dfUnido;
+    if (!fuente?.length) return;
+
+    const canvas = document.getElementById('chartUnidadesTotal');
+    if (!canvas) return;
+
+    if (window.chartUnidadesTotal?.destroy) window.chartUnidadesTotal.destroy();
+
+    const conteo = contarUnidadesAcademicas(fuente);
+    const labels = Object.keys(conteo);
+    const values = Object.values(conteo);
+    const total = values.reduce((a, b) => a + b, 0);
+
+    window.chartUnidadesTotal = new Chart(canvas, {
+        type: 'pie',
+        data: { labels, datasets: [{ data: values }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
                 tooltip: {
                     callbacks: {
                         label: ctx => {
