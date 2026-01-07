@@ -181,6 +181,7 @@
 
         <!-- NAV TABS -->
         <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+
             <li class="nav-item" role="presentation">
                 <button
                     class="nav-link active"
@@ -189,6 +190,7 @@
                     data-bs-target="#tabResumen"
                     type="button"
                     role="tab">
+                    <i class="bi bi-speedometer2"></i>
                     Resumen
                 </button>
             </li>
@@ -201,6 +203,7 @@
                     data-bs-target="#tabBuscador"
                     type="button"
                     role="tab">
+                    <i class="bi bi-search"></i>
                     Buscador
                 </button>
             </li>
@@ -213,11 +216,11 @@
                     data-bs-target="#tabAnalisis"
                     type="button"
                     role="tab">
+                    <i class="bi bi-bar-chart-line"></i>
                     Análisis
                 </button>
             </li>
         </ul>
-
         <!-- TAB CONTENT -->
         <div class="tab-content pt-4">
 
@@ -240,7 +243,9 @@
                                 <h6 class="chart-title text-center">
                                     Avance de Fase 1 → Fase 2
                                 </h6>
-                                <canvas id="chartAvanceFase"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartAvanceFase"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -250,7 +255,9 @@
                                 <h6 class="chart-title text-center">
                                     Estado Fase 1
                                 </h6>
-                                <canvas id="chartEstadoIniciativas"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartEstadoIniciativas"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -259,17 +266,21 @@
                                 <h6 class="chart-title text-center">
                                     Estado Fase 2
                                 </h6>
-                                <canvas id="chartEstadoSintesis"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartEstadoSintesis"></canvas>
+                                </div>
                             </div>
                         </div>
 
                         <!-- TOTAL REGISTROS POR SEDE -->
-                        <div class="col-12 d-none" id="chartSedeTotalWrapper">
+                        <div class="col-12" id="chartSedeTotalWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
                                     Distribución Total de Registros por Sede
                                 </h6>
-                                <canvas id="chartSedeTotal"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartSedeTotal"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -279,7 +290,9 @@
                                 <h6 class="chart-title text-center">
                                     Distribución por Sede (Fase 1)
                                 </h6>
-                                <canvas id="chartSedeIniciativas"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartSedeIniciativas"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -289,36 +302,44 @@
                                 <h6 class="chart-title text-center">
                                     Distribución por Sede (Fase 2)
                                 </h6>
-                                <canvas id="chartSedeSintesis"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartSedeSintesis"></canvas>
+                                </div>
                             </div>
                         </div>
 
                         <!-- DISTRIBUCIÓN POR DEPENDENCIA (TOTAL) -->
-                        <div class="col-12 d-none" id="chartDependenciasTotalWrapper">
+                        <div class="col-12" id="chartDependenciasTotalWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
                                     Distribución total por Dependencia
                                 </h6>
-                                <canvas id="chartDependenciasTotal"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartDependenciasTotal"></canvas>
+                                </div>
                             </div>
                         </div>
 
                         <!-- DEPENDENCIAS -->
-                        <div class="col-12 col-md-6 d-none" id="chartDependenciasIniciativasWrapper">
+                        <div class="col-12 col-md-6" id="chartDependenciasIniciativasWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
                                     Distribución por Dependencia (Fase 1)
                                 </h6>
-                                <canvas id="chartDependenciasIniciativas"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartDependenciasIniciativas"></canvas>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6 d-none" id="chartDependenciasSintesisWrapper">
+                        <div class="col-12 col-md-6" id="chartDependenciasSintesisWrapper">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
                                     Distribución por Dependencia (Fase 2)
                                 </h6>
-                                <canvas id="chartDependenciasSintesis"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="chartDependenciasSintesis"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -355,15 +376,15 @@
                                 <canvas id="chartUnidadesSintesis"></canvas>
                             </div>
                         </div>
-
-
                         <!-- Iniciativas por mes -->
                         <div class="col-12">
                             <div class="chart-card chart-card-md">
                                 <h6 class="chart-title text-center">
                                     Registros Enviados por Mes (Fase 1)
                                 </h6>
-                                <div id="chartsIniciativasPorMes"></div>
+                                <div class="chart-container">
+                                    <canvas id="chartsIniciativasPorMes"></canvas>
+                                </div>
                             </div>
                         </div>
 
@@ -373,10 +394,11 @@
                                 <h6 class="chart-title text-center">
                                     Registros Enviados por Mes (Fase 2)
                                 </h6>
-                                <div id="chartsSintesisPorMes"></div>
+                                <div class="chart-container">
+                                    <canvas id="chartsSintesisPorMes"></canvas>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -443,31 +465,53 @@
                 id="tabAnalisis"
                 role="tabpanel">
 
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="chart-card chart-card-sm">
-                            <h6 class="chart-title text-center">
-                                Mecanismo VcM – Iniciativas Enviadas
-                            </h6>
-                            <canvas id="chartMecanismoIniciativas"></canvas>
+                <div class="container" id="chartsSection">
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Mecanismo VcM Sugerido por Iniciativa – Fase 1
+                                </h6>
+                                <div class="chart-container">
+                                    <canvas id="chartMecanismoIniciativas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="chart-card chart-card-sm">
+                                <h6 class="chart-title text-center">
+                                    Mecanismo VcM Sugerido por Iniciativa – Fase 2
+                                </h6>
+                                <div class="chart-container">
+                                    <canvas id="chartMecanismoSintesis"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Total de cada Mecanismo VcM en cada Iniciativa (Fase 1)
+                                </h6>
+                                <div class="chart-container">
+                                    <canvas id="chartVCMIniciativas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="chart-card chart-card-md">
+                                <h6 class="chart-title text-center">
+                                    Total de cada Mecanismo VcM en cada Iniciativa (Fase 2)
+                                </h6>
+                                <div class="chart-container">
+                                    <canvas id="chartVCMSintesis"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-12 col-md-6">
-                        <div class="chart-card chart-card-sm">
-                            <h6 class="chart-title text-center">
-                                Mecanismo VcM – Síntesis Enviadas
-                            </h6>
-                            <canvas id="chartMecanismoSintesis"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="height: 400px;">
-                    <canvas id="chartVCMIniciativas"></canvas>
-                </div>
-                <div style="height: 400px;">
-                    <canvas id="chartVCMSintesis"></canvas>
                 </div>
             </div>
 

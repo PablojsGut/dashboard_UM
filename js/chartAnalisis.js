@@ -72,6 +72,13 @@ function renderChartVCMIniciativas(data) {
             maintainAspectRatio: false,
             scales: {
                 y: { beginAtZero: true }
+            },
+            plugins: {
+
+                // ❌ eliminar leyenda (cuadrado clickeable)
+                legend: {
+                    display: false
+                }   
             }
         }
     });
@@ -107,6 +114,13 @@ function renderChartVCMSintesis(data) {
             maintainAspectRatio: false,
             scales: {
                 y: { beginAtZero: true }
+            },
+            plugins: {
+
+                // ❌ eliminar leyenda (cuadrado clickeable)
+                legend: {
+                    display: false
+                }
             }
         }
     });
@@ -149,7 +163,7 @@ function renderChartMecanismoIniciativas(data) {
     const total = values.reduce((a, b) => a + b, 0);
 
     window.chartMecanismoIniciativas = new Chart(canvas, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels,
             datasets: [{ data: values }]
@@ -157,6 +171,7 @@ function renderChartMecanismoIniciativas(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
                 legend: { position: 'right' },
                 tooltip: {
@@ -192,7 +207,7 @@ function renderChartMecanismoSintesis(data) {
     const total = values.reduce((a, b) => a + b, 0);
 
     window.chartMecanismoSintesis = new Chart(canvas, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels,
             datasets: [{ data: values }]
@@ -200,6 +215,7 @@ function renderChartMecanismoSintesis(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
                 legend: { position: 'right' },
                 tooltip: {

@@ -6,6 +6,7 @@
     border: 1px solid #e6e6e6;
 }
 
+/* títulos intactos */
 .chart-title {
     font-size: 0.95rem;
     font-weight: 600;
@@ -13,7 +14,7 @@
     margin-bottom: 10px;
 }
 
-/* Tamaños por jerarquía */
+/* TAMAÑOS ORIGINALES */
 .chart-card-lg {
     height: 360px;
 }
@@ -26,29 +27,20 @@
     height: 260px;
 }
 
-/* Canvas siempre responsivo */
-.chart-card canvas {
+/* CONTENEDOR: mantiene tu layout */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 34px); /* 🔴 CLAVE */
+}
+
+/* CANVAS: SOLO ancho forzado */
+.chart-container canvas {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important; /* 🔴 CLAVE */
 }
 
-/* Gráficos por mes (varios canvas) */
-#chartsIniciativasPorMes canvas,
-#chartsSintesisPorMes canvas {
-    margin-top: 12px;
-}
-
-#chartsSection {
-    animation: fadeInUp 0.4s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* ocultar sin romper */
+.chart-hidden {
+    display: none;
 }

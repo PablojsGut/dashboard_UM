@@ -4,7 +4,19 @@ function extraerMecanismo(valor) {
     return String(valor).split(':')[0].trim();
 }
 
+function destroyAllCharts() {
+    document.querySelectorAll('canvas').forEach(canvas => {
+        if (canvas._chart) {
+            canvas._chart.destroy();
+            canvas._chart = null;
+        }
+    });
+}
+
 function applyFilters() {
+
+    // 🔥 1️⃣ destruir TODOS los charts antes de tocar el DOM
+    destroyAllCharts();
 
     if (!window.dfUnido || dfUnido.length === 0) {
         showAlert('❌ No hay datos para filtrar', 'danger');
@@ -24,18 +36,10 @@ function applyFilters() {
 
     const dfFiltrado = dfUnido.filter(row => {
 
-        // ======================
-        // FILTRO SEDE
-        // ======================
         if (sede) {
-            if (
-                String(row['Sede (Iniciativas)'] || '') !== sede
-            ) return false;
+            if (String(row['Sede (Iniciativas)'] || '') !== sede) return false;
         }
 
-        // ======================
-        // FILTRO DEPENDENCIA
-        // ======================
         if (dependencia) {
             if (
                 String(
@@ -44,28 +48,18 @@ function applyFilters() {
             ) return false;
         }
 
-        // ======================
-        // FILTRO UNIDAD ACADÉMICA (FIX DEFINITIVO)
-        // ======================
         if (subdependencia) {
-
             const unidad = String(
                 row['Unidad Académica (Iniciativas)'] || ''
             ).replace(/&nbsp;/g, ' ').trim();
 
             if (!unidad) return false;
-
-            const unidadNorm = normalizeText(unidad);
-
-            if (unidadNorm !== subNorm) return false;
+            if (normalizeText(unidad) !== subNorm) return false;
         }
 
         if (mecanismo) {
-            const raw =
-                row['Mecanismo VcM sugerido (Iniciativas)'];
-            const mecRow = extraerMecanismo(raw);
-
-            if (mecRow !== mecanismo) return false;
+            const raw = row['Mecanismo VcM sugerido (Iniciativas)'];
+            if (extraerMecanismo(raw) !== mecanismo) return false;
         }
 
         return true;
@@ -90,17 +84,17 @@ function applyFilters() {
         document.getElementById('chartSedeTotalWrapper');
 
     if (!sede) {
-        chartSedeWrapper?.classList.remove('d-none');
-        chartSedeSintesisWrapper?.classList.remove('d-none');
-        chartSedeTotalWrapper?.classList.remove('d-none');
+        chartSedeWrapper?.classList.remove('chart-hidden');
+        chartSedeSintesisWrapper?.classList.remove('chart-hidden');
+        chartSedeTotalWrapper?.classList.remove('chart-hidden');
 
         renderChartSede(dfFiltrado);
         renderChartSedeSintesis(dfFiltrado);
         renderChartSedeTotal(dfFiltrado);
     } else {
-        chartSedeWrapper?.classList.add('d-none');
-        chartSedeSintesisWrapper?.classList.add('d-none');
-        chartSedeTotalWrapper?.classList.add('d-none');
+        chartSedeWrapper?.classList.add('chart-hidden');
+        chartSedeSintesisWrapper?.classList.add('chart-hidden');
+        chartSedeTotalWrapper?.classList.add('chart-hidden');
     }
 
     // ======================
@@ -114,30 +108,37 @@ function applyFilters() {
         document.getElementById('chartDependenciasSintesisWrapper');
 
     if (!dependencia) {
-        chartDependenciasTotalWrapper?.classList.remove('d-none');
-        depIniWrapper?.classList.remove('d-none');
-        depSinWrapper?.classList.remove('d-none');
+        chartDependenciasTotalWrapper?.classList.remove('chart-hidden');
+        depIniWrapper?.classList.remove('chart-hidden');
+        depSinWrapper?.classList.remove('chart-hidden');
 
         renderChartDependenciasTotal(dfFiltrado);
         renderChartDependenciasIniciativas(dfFiltrado);
         renderChartDependenciasSintesis(dfFiltrado);
     } else {
-        chartDependenciasTotalWrapper?.classList.add('d-none');
-        depIniWrapper?.classList.add('d-none');
-        depSinWrapper?.classList.add('d-none');
+        chartDependenciasTotalWrapper?.classList.add('chart-hidden');
+        depIniWrapper?.classList.add('chart-hidden');
+        depSinWrapper?.classList.add('chart-hidden');
     }
 
+    // ======================
+    // MOSTRAR SECCIONES
+    // ======================
     document.getElementById('chartsSection')
         ?.classList.remove('d-none');
     document.getElementById('tabsSection')
         ?.classList.remove('d-none');
 
+    // ======================
+    // OTROS GRÁFICOS
+    // ======================
     initBuscador(dfFiltrado);
     renderChartVCMIniciativas(dfFiltrado);
     renderChartVCMSintesis(dfFiltrado);
     renderChartMecanismoIniciativas(dfFiltrado);
     renderChartMecanismoSintesis(dfFiltrado);
 }
+
 
 
 /* ==============================

@@ -32,37 +32,70 @@ function contarEstados(data, columnName) {
 /* ==============================
    PIE CHART (SIN TÍTULO)
 ================================ */
-function renderPieChart(canvasId, conteo) {
+function renderDoughnutChart(canvasId, conteo) {
 
-    const ctx = document.getElementById(canvasId);
-    if (!ctx) return;
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return null;
 
-    const total = conteo['En creación'] + conteo['Enviada'];
+    // Destruir gráfico previo si existe
+    if (canvas._chart instanceof Chart) {
+        canvas._chart.destroy();
+    }
 
-    return new Chart(ctx, {
-        type: 'pie',
+    const labels = Object.keys(conteo);
+    const values = Object.values(conteo);
+    const total = values.reduce((a, b) => a + b, 0);
+
+    canvas._chart = new Chart(canvas, {
+        type: 'doughnut',
         data: {
-            labels: [
-                `En creación (${conteo['En creación']} - ${total ? ((conteo['En creación'] / total) * 100).toFixed(1) : 0}%)`,
-                `Enviada (${conteo['Enviada']} - ${total ? ((conteo['Enviada'] / total) * 100).toFixed(1) : 0}%)`
-            ],
+            labels,
             datasets: [{
-                data: [
-                    conteo['En creación'],
-                    conteo['Enviada']
+                data: values,
+                backgroundColor: [
+                    '#ffc107', // En creación
+                    '#198754'  // Enviada
                 ],
-                backgroundColor: ['#ffc107', '#198754']
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
-                legend: { position: 'bottom' }
+
+                // Leyenda limpia a la derecha
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 14,
+                        padding: 12,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+
+                // Tooltip con detalle
+                tooltip: {
+                    callbacks: {
+                        label: function (ctx) {
+                            const value = ctx.raw || 0;
+                            const percent = total
+                                ? ((value / total) * 100).toFixed(1)
+                                : 0;
+                            return `${ctx.label}: ${value} (${percent}%)`;
+                        }
+                    }
+                }
             }
         }
     });
+
+    return canvas._chart;
 }
+
 
 /* ==============================
    RENDER GENERAL (TORTAS)
@@ -70,17 +103,14 @@ function renderPieChart(canvasId, conteo) {
 function renderCharts(data = null) {
 
     const fuente = data ?? window.dfUnido;
-    if (!fuente || fuente.length === 0) return;
+    if (!Array.isArray(fuente) || fuente.length === 0) return;
 
-    if (chartIniciativas) chartIniciativas.destroy();
-    if (chartSintesis) chartSintesis.destroy();
-
-    chartIniciativas = renderPieChart(
+    chartIniciativas = renderDoughnutChart(
         'chartEstadoIniciativas',
         contarEstados(fuente, 'Estado (Iniciativas)')
     );
 
-    chartSintesis = renderPieChart(
+    chartSintesis = renderDoughnutChart(
         'chartEstadoSintesis',
         contarEstados(fuente, 'Estado (Síntesis)')
     );
@@ -164,12 +194,22 @@ function renderAvanceFaseChart(data = null) {
 ================================ */
 function parseFecha(fecha) {
     if (!fecha) return null;
-    const d = new Date(fecha);
-    return isNaN(d) ? null : d;
+
+    // Esperado: DD/MM/YYYY HH:mm
+    const partes = String(fecha).split(' ');
+    if (partes.length === 0) return null;
+
+    const fechaParte = partes[0]; // DD/MM/YYYY
+    const [dd, mm, yyyy] = fechaParte.split('/').map(Number);
+
+    if (!dd || !mm || !yyyy) return null;
+
+    // Mes en JS es 0-based
+    return new Date(yyyy, mm - 1, dd);
 }
 
-function agruparPorAnoMes(data, columnaFecha) {
 
+function agruparPorAnoMes(data, columnaFecha) {
     const resultado = {};
 
     data.forEach(row => {
@@ -182,7 +222,6 @@ function agruparPorAnoMes(data, columnaFecha) {
         if (!resultado[year]) {
             resultado[year] = Array(12).fill(0);
         }
-
         resultado[year][month]++;
     });
 
@@ -192,62 +231,61 @@ function agruparPorAnoMes(data, columnaFecha) {
 /* ==============================
    BARRAS POR AÑO (SIN TÍTULO)
 ================================ */
-function crearLineChartPorAno(containerId, agrupado) {
+function crearLineChartMultiAno(canvasId, agrupado) {
 
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
 
-    container.innerHTML = '';
+    // destruir gráfico previo
+    if (canvas._chart) {
+        canvas._chart.destroy();
+    }
 
-    const meses = [
-        'Ene','Feb','Mar','Abr','May','Jun',
-        'Jul','Ago','Sep','Oct','Nov','Dic'
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    const colores = [
+        '#0d6efd', '#198754', '#dc3545', '#fd7e14',
+        '#6f42c1', '#20c997'
     ];
 
-    Object.entries(agrupado).forEach(([year, valores]) => {
+    const datasets = Object.entries(agrupado).map(([year, valores], i) => ({
+        label: year,
+        data: valores,
+        borderColor: colores[i % colores.length],
+        backgroundColor: colores[i % colores.length] + '33',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6
+    }));
 
-        const wrapper = document.createElement('div');
-        wrapper.style.height = '300px';
-        wrapper.style.marginBottom = '24px';
-
-        const canvas = document.createElement('canvas');
-        wrapper.appendChild(canvas);
-        container.appendChild(wrapper);
-
-        new Chart(canvas, {
-            type: 'line', // 👈 CAMBIO CLAVE
-            data: {
-                labels: meses,
-                datasets: [{
-                    label: year,
-                    data: valores,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.15)',
-                    fill: true,
-                    tension: 0.35, // suaviza la línea
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
+    canvas._chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: meses,
+            datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Cantidad'
-                        }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad'
                     }
                 }
             }
-        });
+        }
     });
 }
+
 
 /* ==============================
    RENDER GRÁFICOS POR MES
@@ -257,16 +295,17 @@ function renderChartsPorMes(data = null) {
     const fuente = data ?? window.dfUnido;
     if (!fuente || fuente.length === 0) return;
 
-    crearLineChartPorAno(
+    crearLineChartMultiAno(
         'chartsIniciativasPorMes',
         agruparPorAnoMes(fuente, 'Fecha envío (Iniciativas)')
     );
 
-    crearLineChartPorAno(
+    crearLineChartMultiAno(
         'chartsSintesisPorMes',
         agruparPorAnoMes(fuente, 'Fecha envío (Síntesis)')
     );
 }
+
 
 function contarSedes(data) {
 
@@ -432,53 +471,87 @@ function contarSedesTotales(data) {
 function renderChartSedeTotal(data = null) {
 
     const fuente = data ?? window.dfUnido;
-    if (!fuente || fuente.length === 0) return;
+    if (!Array.isArray(fuente) || fuente.length === 0) return;
 
     const canvas = document.getElementById('chartSedeTotal');
     if (!canvas) return;
 
     // Destruir gráfico previo
-    if (
-        window.chartSedeTotal &&
-        typeof window.chartSedeTotal.destroy === 'function'
-    ) {
+    if (window.chartSedeTotal instanceof Chart) {
         window.chartSedeTotal.destroy();
+        window.chartSedeTotal = null;
+    }
+
+    // Validar función de conteo
+    if (typeof contarSedesTotales !== 'function') {
+        console.error('❌ contarSedesTotales no está definida');
+        return;
     }
 
     const conteo = contarSedesTotales(fuente);
-    const total = Object.values(conteo).reduce((a, b) => a + b, 0);
 
-    const labels = Object.keys(conteo).map(key => {
-        const value = conteo[key];
-        const pct = total ? ((value / total) * 100).toFixed(1) : 0;
-        return `${key} (${value} - ${pct}%)`;
-    });
+    const labels = Object.keys(conteo);
+    const values = Object.values(conteo);
+
+    if (labels.length === 0) return;
+
+    const total = values.reduce((a, b) => a + b, 0);
+
+    // Colores base (se reciclan si hay más categorías)
+    const baseColors = [
+        '#0d6efd', // Santiago
+        '#198754', // Temuco
+        '#6f42c1', // Santiago;Temuco
+        '#adb5bd'  // Sin info
+    ];
+
+    const colors = labels.map((_, i) => baseColors[i % baseColors.length]);
 
     window.chartSedeTotal = new Chart(canvas, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels,
             datasets: [{
-                data: Object.values(conteo),
-                backgroundColor: [
-                    '#0d6efd', // Santiago
-                    '#198754', // Temuco
-                    '#6f42c1', // Santiago;Temuco
-                    '#adb5bd'  // Sin info
-                ]
+                data: values,
+                backgroundColor: colors,
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
+
+                // Leyenda limpia
                 legend: {
-                    position: 'bottom'
+                    position: 'right',
+                    labels: {
+                        boxWidth: 14,
+                        padding: 12,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+
+                // Tooltip con valores
+                tooltip: {
+                    callbacks: {
+                        label: function (ctx) {
+                            const value = Number(ctx.raw) || 0;
+                            const percent = total
+                                ? ((value / total) * 100).toFixed(1)
+                                : '0.0';
+                            return `${ctx.label}: ${value} (${percent}%)`;
+                        }
+                    }
                 }
             }
         }
     });
 }
+
 
 function contarDependencias(data) {
     const conteo = {};
@@ -637,7 +710,7 @@ function renderChartDependenciasTotal(data = null) {
     const total = values.reduce((a, b) => a + b, 0);
 
     window.chartDependenciasTotal = new Chart(canvas, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels,
             datasets: [{
@@ -647,6 +720,7 @@ function renderChartDependenciasTotal(data = null) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
                 legend: {
                     position: 'right'
