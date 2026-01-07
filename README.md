@@ -19,7 +19,7 @@ El proyecto consta de dos módulos fundamentales:
 
 ## 📺 Video Demostrativo
 Puedes ver una explicación del funcionamiento y el estado actual del prototipo en el siguiente video:
-👉 [Ver video explicativo del funcionamiento](https://youtu.be/5z1O5AZl1_8)
+👉 [Ver video explicativo del funcionamiento](https://www.youtube.com/watch?v=-mJDIh7N6xs)
 
 ## 🌐 Demo en Vivo
 Si no deseas descargar el repositorio, puedes probar la aplicación directamente desde el navegador en el siguiente enlace:
